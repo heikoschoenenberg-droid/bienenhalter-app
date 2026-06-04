@@ -15,11 +15,19 @@ class HiveRepository {
     return Future.wait(rows.map(_toModel));
   }
 
+  Future<List<Hive>> listHives() {
+    return getAll();
+  }
+
   Future<Hive> getById(String id) async {
     final row = await (_database.select(
       _database.hives,
     )..where((table) => table.id.equals(id))).getSingle();
     return _toModel(row);
+  }
+
+  Future<Hive> getHiveById(String id) {
+    return getById(id);
   }
 
   Future<void> upsert(Hive hive) {
@@ -41,6 +49,14 @@ class HiveRepository {
             updatedAt: hive.updatedAt,
           ),
         );
+  }
+
+  Future<void> createHive(Hive hive) {
+    return upsert(hive);
+  }
+
+  Future<void> updateHive(Hive hive) {
+    return upsert(hive);
   }
 
   Future<Hive> _toModel(db.Hive row) async {
@@ -71,6 +87,13 @@ class HiveRepository {
   }
 
   HiveStatus _statusFromName(String value) {
+    if (value == 'needsAttention') {
+      return HiveStatus.active;
+    }
+    if (value == 'inactive') {
+      return HiveStatus.dissolved;
+    }
+
     return HiveStatus.values.firstWhere(
       (status) => status.name == value,
       orElse: () => HiveStatus.active,

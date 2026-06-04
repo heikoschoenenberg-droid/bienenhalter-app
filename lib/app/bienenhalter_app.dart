@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../features/dashboard/dashboard_screen.dart';
 import '../features/hives/hive_detail_screen.dart';
+import '../features/hives/hive_form_screen.dart';
 import '../features/hives/hive_list_screen.dart';
 import '../features/inspections/inspection_create_screen.dart';
 import '../features/inspections/inspection_history_screen.dart';
@@ -37,6 +38,9 @@ class BienenhalterApp extends StatelessWidget {
       AppRoutes.dashboard => const DashboardScreen(),
       AppRoutes.hives => const HiveListScreen(),
       AppRoutes.hiveDetail => HiveDetailScreen(hiveId: hiveId),
+      AppRoutes.hiveForm => HiveFormScreen(
+        arguments: arguments is HiveFormArguments ? arguments : null,
+      ),
       AppRoutes.inspectionCreate => InspectionCreateScreen(hiveId: hiveId),
       AppRoutes.inspectionHistory => InspectionHistoryScreen(hiveId: hiveId),
       AppRoutes.tasks => const TaskListScreen(),

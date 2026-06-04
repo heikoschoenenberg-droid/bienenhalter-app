@@ -1,6 +1,7 @@
 import 'package:bienenhalter_app/core/database/app_database.dart'
-    hide Inspection;
+    hide Hive, Inspection;
 import 'package:bienenhalter_app/core/models/beekeeper_task.dart';
+import 'package:bienenhalter_app/core/models/hive.dart';
 import 'package:bienenhalter_app/core/models/inspection.dart';
 import 'package:bienenhalter_app/core/repositories/apiary_repository.dart';
 import 'package:bienenhalter_app/core/repositories/hive_repository.dart';
@@ -41,6 +42,52 @@ void main() {
     final seededHives = await hives.getAll();
 
     expect(seededHives.length, greaterThanOrEqualTo(5));
+  });
+
+  test('hive can be created and updated', () async {
+    final apiary = (await apiaries.getAll()).first;
+    final hive = Hive(
+      id: 'test-hive',
+      number: 'Testvolk 1',
+      beeStandId: apiary.id,
+      name: 'Testname',
+      hiveType: 'Dadant',
+      queenYear: 2026,
+      queenColor: 'Weiss',
+      queenOrigin: 'Testherkunft',
+      status: HiveStatus.active,
+      notes: 'Angelegt im Test',
+      createdAt: DateTime(2026, 6, 4),
+      updatedAt: DateTime(2026, 6, 4),
+      lastInspectionDate: null,
+    );
+
+    await hives.createHive(hive);
+
+    final listAfterCreate = await hives.listHives();
+    expect(listAfterCreate.any((item) => item.id == hive.id), isTrue);
+
+    await hives.updateHive(
+      Hive(
+        id: hive.id,
+        number: hive.number,
+        beeStandId: hive.beeStandId,
+        name: 'Geaenderter Name',
+        hiveType: hive.hiveType,
+        queenYear: hive.queenYear,
+        queenColor: hive.queenColor,
+        queenOrigin: hive.queenOrigin,
+        status: HiveStatus.sold,
+        notes: hive.notes,
+        createdAt: hive.createdAt,
+        updatedAt: DateTime(2026, 6, 5),
+        lastInspectionDate: hive.lastInspectionDate,
+      ),
+    );
+
+    final updatedHive = await hives.getHiveById(hive.id);
+    expect(updatedHive.name, 'Geaenderter Name');
+    expect(updatedHive.status, HiveStatus.sold);
   });
 
   test('task can be created and completed', () async {

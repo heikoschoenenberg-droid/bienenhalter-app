@@ -1,4 +1,16 @@
-enum HiveStatus { active, needsAttention, inactive }
+enum HiveStatus { active, dissolved, united, sold, lost }
+
+extension HiveStatusLabel on HiveStatus {
+  String get label {
+    return switch (this) {
+      HiveStatus.active => 'Aktiv',
+      HiveStatus.dissolved => 'Aufgeloest',
+      HiveStatus.united => 'Vereinigt',
+      HiveStatus.sold => 'Verkauft',
+      HiveStatus.lost => 'Verstorben / verloren',
+    };
+  }
+}
 
 class Hive {
   const Hive({
@@ -32,10 +44,6 @@ class Hive {
   final DateTime? lastInspectionDate;
 
   String get statusLabel {
-    return switch (status) {
-      HiveStatus.active => 'Aktiv',
-      HiveStatus.needsAttention => 'Beobachten',
-      HiveStatus.inactive => 'Inaktiv',
-    };
+    return status.label;
   }
 }

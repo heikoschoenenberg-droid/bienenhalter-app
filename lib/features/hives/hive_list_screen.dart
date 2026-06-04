@@ -7,15 +7,37 @@ import '../../core/models/beekeeper_task.dart';
 import '../../core/models/hive.dart';
 import '../../core/services/app_repositories.dart';
 
-class HiveListScreen extends StatelessWidget {
+class HiveListScreen extends StatefulWidget {
   const HiveListScreen({super.key});
+
+  @override
+  State<HiveListScreen> createState() => _HiveListScreenState();
+}
+
+class _HiveListScreenState extends State<HiveListScreen> {
+  late Future<_HiveListData> _future;
+
+  @override
+  void initState() {
+    super.initState();
+    _future = _loadData();
+  }
+
+  void _reload() {
+    setState(() => _future = _loadData());
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Voelker')),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _openCreateHive,
+        icon: const Icon(Icons.add),
+        label: const Text('Neues Volk'),
+      ),
       body: FutureBuilder<_HiveListData>(
-        future: _loadData(),
+        future: _future,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
@@ -36,12 +58,20 @@ class HiveListScreen extends StatelessWidget {
                 hive: hive,
                 beeStand: data.beeStandById(hive.beeStandId),
                 openTasks: data.openTasksByHive[hive.id] ?? const [],
+                onChanged: _reload,
               );
             },
           );
         },
       ),
     );
+  }
+
+  Future<void> _openCreateHive() async {
+    final changed = await Navigator.pushNamed(context, AppRoutes.hiveForm);
+    if (changed == true && mounted) {
+      _reload();
+    }
   }
 
   Future<_HiveListData> _loadData() async {
@@ -130,11 +160,13 @@ class _HiveCard extends StatelessWidget {
     required this.hive,
     required this.beeStand,
     required this.openTasks,
+    required this.onChanged,
   });
 
   final Hive hive;
   final BeeStand beeStand;
   final List<BeekeeperTask> openTasks;
+  final VoidCallback onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -147,7 +179,7 @@ class _HiveCard extends StatelessWidget {
           context,
           AppRoutes.hiveDetail,
           arguments: hive.id,
-        ),
+        ).then((_) => onChanged()),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -246,23 +278,17 @@ class _StatusPill extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final color = switch (status) {
       HiveStatus.active => colorScheme.primaryContainer,
-      HiveStatus.needsAttention => colorScheme.tertiaryContainer,
-      HiveStatus.inactive => colorScheme.surfaceContainerHighest,
+      HiveStatus.dissolved => colorScheme.surfaceContainerHighest,
+      HiveStatus.united => colorScheme.secondaryContainer,
+      HiveStatus.sold => colorScheme.tertiaryContainer,
+      HiveStatus.lost => colorScheme.errorContainer,
     };
 
     return Chip(
-      label: Text(_statusLabel(status)),
+      label: Text(status.label),
       backgroundColor: color,
       visualDensity: VisualDensity.compact,
     );
-  }
-
-  String _statusLabel(HiveStatus status) {
-    return switch (status) {
-      HiveStatus.active => 'Aktiv',
-      HiveStatus.needsAttention => 'Beobachten',
-      HiveStatus.inactive => 'Inaktiv',
-    };
   }
 }
 

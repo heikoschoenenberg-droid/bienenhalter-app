@@ -1,7 +1,6 @@
-// ignore_for_file: avoid_web_libraries_in_flutter
-
 import 'dart:convert';
-import 'dart:html' as html;
+
+import 'package:web/web.dart' as web;
 
 import '../demo/demo_data.dart';
 import '../models/bee_stand.dart';
@@ -61,9 +60,17 @@ class WebHiveRepository {
     return _store.hives.map(_withLatestInspectionDate).toList();
   }
 
+  Future<List<Hive>> listHives() {
+    return getAll();
+  }
+
   Future<Hive> getById(String id) async {
     final hive = _store.hives.firstWhere((item) => item.id == id);
     return _withLatestInspectionDate(hive);
+  }
+
+  Future<Hive> getHiveById(String id) {
+    return getById(id);
   }
 
   Future<void> upsert(Hive hive) async {
@@ -76,11 +83,20 @@ class WebHiveRepository {
     _store.save();
   }
 
+  Future<void> createHive(Hive hive) {
+    return upsert(hive);
+  }
+
+  Future<void> updateHive(Hive hive) {
+    return upsert(hive);
+  }
+
   Hive _withLatestInspectionDate(Hive hive) {
-    final hiveInspections = _store.inspections
-        .where((inspection) => inspection.hiveId == hive.id)
-        .toList()
-      ..sort((a, b) => b.date.compareTo(a.date));
+    final hiveInspections =
+        _store.inspections
+            .where((inspection) => inspection.hiveId == hive.id)
+            .toList()
+          ..sort((a, b) => b.date.compareTo(a.date));
 
     return Hive(
       id: hive.id,
@@ -198,7 +214,7 @@ class _WebJsonStore {
       return;
     }
 
-    final rawJson = html.window.localStorage[_storageKey];
+    final rawJson = web.window.localStorage.getItem(_storageKey);
     if (rawJson == null || rawJson.isEmpty) {
       _seedFromDemoData();
       save();
@@ -245,7 +261,7 @@ class _WebJsonStore {
       'inspections': inspections.map(_inspectionToJson).toList(),
       'tasks': tasks.map(_taskToJson).toList(),
     };
-    html.window.localStorage[_storageKey] = jsonEncode(data);
+    web.window.localStorage.setItem(_storageKey, jsonEncode(data));
   }
 
   void _seedFromDemoData() {
@@ -428,6 +444,13 @@ class _WebJsonStore {
   }
 
   HiveStatus _hiveStatusFromName(String value) {
+    if (value == 'needsAttention') {
+      return HiveStatus.active;
+    }
+    if (value == 'inactive') {
+      return HiveStatus.dissolved;
+    }
+
     return HiveStatus.values.firstWhere(
       (status) => status.name == value,
       orElse: () => HiveStatus.active,

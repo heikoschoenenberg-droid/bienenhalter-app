@@ -4,6 +4,7 @@ class AppRoutes {
   static const dashboard = '/';
   static const hives = '/hives';
   static const hiveDetail = '/hives/detail';
+  static const hiveForm = '/hives/form';
   static const inspectionCreate = '/inspections/create';
   static const inspectionHistory = '/inspections/history';
   static const tasks = '/tasks';

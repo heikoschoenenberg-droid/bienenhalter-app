@@ -106,7 +106,7 @@ class DashboardScreen extends StatelessWidget {
 
     return _DashboardData(
       activeHives: hives
-          .where((hive) => hive.status != HiveStatus.inactive)
+          .where((hive) => hive.status == HiveStatus.active)
           .length,
       openTasks: tasks
           .where((task) => task.status == BeekeeperTaskStatus.open)

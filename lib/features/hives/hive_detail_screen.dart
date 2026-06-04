@@ -7,6 +7,7 @@ import '../../core/models/beekeeper_task.dart';
 import '../../core/models/hive.dart';
 import '../../core/models/inspection.dart';
 import '../../core/services/app_repositories.dart';
+import 'hive_form_screen.dart';
 import '../tasks/task_form_screen.dart';
 
 class HiveDetailScreen extends StatefulWidget {
@@ -63,6 +64,18 @@ class _HiveDetailScreenState extends State<HiveDetailScreen> {
     }
   }
 
+  Future<void> _openHiveForm(String hiveId) async {
+    final changed = await Navigator.pushNamed(
+      context,
+      AppRoutes.hiveForm,
+      arguments: HiveFormArguments(hiveId: hiveId),
+    );
+
+    if (changed == true && mounted) {
+      _reload();
+    }
+  }
+
   Future<void> _completeTask(String taskId) async {
     await AppRepositories.instance.tasks.complete(taskId);
     _reload();
@@ -111,6 +124,7 @@ class _HiveDetailScreenState extends State<HiveDetailScreen> {
               _ActionGrid(
                 hiveId: hive.id,
                 onCreateTask: () => _openTaskForm(hive.id),
+                onEditHive: () => _openHiveForm(hive.id),
               ),
               const SizedBox(height: 20),
               _SectionCard(
@@ -126,6 +140,8 @@ class _HiveDetailScreenState extends State<HiveDetailScreen> {
                   _DetailRow(label: 'Koeniginnenfarbe', value: hive.queenColor),
                   _DetailRow(label: 'Herkunft', value: hive.queenOrigin),
                   _DetailRow(label: 'Status', value: hive.statusLabel),
+                  if (hive.notes.isNotEmpty)
+                    _DetailRow(label: 'Notizen', value: hive.notes),
                 ],
               ),
               const SizedBox(height: 12),
@@ -203,10 +219,15 @@ class _HiveDetailData {
 }
 
 class _ActionGrid extends StatelessWidget {
-  const _ActionGrid({required this.hiveId, required this.onCreateTask});
+  const _ActionGrid({
+    required this.hiveId,
+    required this.onCreateTask,
+    required this.onEditHive,
+  });
 
   final String hiveId;
   final VoidCallback onCreateTask;
+  final VoidCallback onEditHive;
 
   @override
   Widget build(BuildContext context) {
@@ -222,6 +243,11 @@ class _ActionGrid extends StatelessWidget {
             ),
             icon: const Icon(Icons.add_task),
             label: const Text('Neue Kontrolle'),
+          ),
+          OutlinedButton.icon(
+            onPressed: onEditHive,
+            icon: const Icon(Icons.edit),
+            label: const Text('Bearbeiten'),
           ),
           OutlinedButton.icon(
             onPressed: onCreateTask,
