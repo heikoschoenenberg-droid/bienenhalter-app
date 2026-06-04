@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../app/app_routes.dart';
 import '../../core/date_format.dart';
-import '../../core/demo/demo_data.dart';
 import '../../core/models/beekeeper_task.dart';
+import '../../core/models/hive.dart';
+import '../../core/services/app_repositories.dart';
 import 'task_form_screen.dart';
 
 class TaskListScreen extends StatefulWidget {
@@ -14,10 +15,27 @@ class TaskListScreen extends StatefulWidget {
 }
 
 class _TaskListScreenState extends State<TaskListScreen> {
+  late Future<_TaskListData> _future;
+
+  @override
+  void initState() {
+    super.initState();
+    _future = _loadData();
+  }
+
+  Future<_TaskListData> _loadData() async {
+    final repositories = AppRepositories.instance;
+    final tasks = await repositories.tasks.getAllSorted();
+    final hives = await repositories.hives.getAll();
+    return _TaskListData(tasks: tasks, hives: hives);
+  }
+
+  void _reload() {
+    setState(() => _future = _loadData());
+  }
+
   @override
   Widget build(BuildContext context) {
-    final groupedTasks = _groupTasks(DemoData.sortedTasks());
-
     return Scaffold(
       appBar: AppBar(title: const Text('Aufgaben')),
       floatingActionButton: FloatingActionButton.extended(
@@ -25,33 +43,47 @@ class _TaskListScreenState extends State<TaskListScreen> {
         icon: const Icon(Icons.add),
         label: const Text('Neue Aufgabe'),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Text(
-            'Aufgabenliste',
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Offene Aufgaben stehen oben und sind nach Faelligkeit sortiert.',
-          ),
-          const SizedBox(height: 20),
-          for (final group in groupedTasks.entries) ...[
-            _TaskGroupTitle(title: group.key),
-            const SizedBox(height: 8),
-            for (final task in group.value) ...[
-              _TaskCard(
-                task: task,
-                onOpen: () => _openTaskForm(taskId: task.id),
-                onComplete: task.isOpen ? () => _completeTask(task.id) : null,
+      body: FutureBuilder<_TaskListData>(
+        future: _future,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final data = snapshot.data!;
+          final groupedTasks = _groupTasks(data.tasks);
+          return ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              Text(
+                'Aufgabenliste',
+                style: Theme.of(context).textTheme.headlineMedium,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
+              const Text(
+                'Offene Aufgaben stehen oben und sind nach Faelligkeit sortiert.',
+              ),
+              const SizedBox(height: 20),
+              for (final group in groupedTasks.entries) ...[
+                _TaskGroupTitle(title: group.key),
+                const SizedBox(height: 8),
+                for (final task in group.value) ...[
+                  _TaskCard(
+                    task: task,
+                    hive: data.hiveById(task.hiveId),
+                    onOpen: () => _openTaskForm(taskId: task.id),
+                    onComplete: task.isOpen
+                        ? () => _completeTask(task.id)
+                        : null,
+                  ),
+                  const SizedBox(height: 10),
+                ],
+                const SizedBox(height: 8),
+              ],
+              const SizedBox(height: 72),
             ],
-            const SizedBox(height: 8),
-          ],
-          const SizedBox(height: 72),
-        ],
+          );
+        },
       ),
     );
   }
@@ -64,13 +96,16 @@ class _TaskListScreenState extends State<TaskListScreen> {
     );
 
     if (changed == true && mounted) {
-      setState(() {});
+      _reload();
     }
   }
 
-  void _completeTask(String taskId) {
-    DemoData.completeTask(taskId);
-    setState(() {});
+  Future<void> _completeTask(String taskId) async {
+    await AppRepositories.instance.tasks.complete(taskId);
+    _reload();
+    if (!mounted) {
+      return;
+    }
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Aufgabe wurde als erledigt markiert.')),
     );
@@ -92,7 +127,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
       return 'Erledigt';
     }
 
-    final today = DemoData.today;
+    final today = DateTime.now();
     final dueDate = DateTime(
       task.dueDate.year,
       task.dueDate.month,
@@ -114,6 +149,17 @@ class _TaskListScreenState extends State<TaskListScreen> {
   }
 }
 
+class _TaskListData {
+  const _TaskListData({required this.tasks, required this.hives});
+
+  final List<BeekeeperTask> tasks;
+  final List<Hive> hives;
+
+  Hive hiveById(String id) {
+    return hives.firstWhere((hive) => hive.id == id);
+  }
+}
+
 class _TaskGroupTitle extends StatelessWidget {
   const _TaskGroupTitle({required this.title});
 
@@ -128,17 +174,18 @@ class _TaskGroupTitle extends StatelessWidget {
 class _TaskCard extends StatelessWidget {
   const _TaskCard({
     required this.task,
+    required this.hive,
     required this.onOpen,
     required this.onComplete,
   });
 
   final BeekeeperTask task;
+  final Hive hive;
   final VoidCallback onOpen;
   final VoidCallback? onComplete;
 
   @override
   Widget build(BuildContext context) {
-    final hive = DemoData.hiveById(task.hiveId);
     final isOverdue = _isOverdue(task);
     final colorScheme = Theme.of(context).colorScheme;
     final textStyle = task.isOpen
@@ -223,7 +270,7 @@ class _TaskCard extends StatelessWidget {
       return false;
     }
 
-    final today = DemoData.today;
+    final today = DateTime.now();
     final dueDate = DateTime(
       task.dueDate.year,
       task.dueDate.month,

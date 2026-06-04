@@ -2,92 +2,133 @@ import 'package:flutter/material.dart';
 
 import '../../app/app_routes.dart';
 import '../../core/date_format.dart';
-import '../../core/demo/demo_data.dart';
+import '../../core/models/beekeeper_task.dart';
 import '../../core/models/hive.dart';
+import '../../core/models/inspection.dart';
+import '../../core/services/app_repositories.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final activeHives = DemoData.hives
-        .where((hive) => hive.status != HiveStatus.inactive)
-        .length;
-    final openTasks = DemoData.tasks.where((task) => task.isOpen).length;
-    final latestInspection = DemoData.latestInspection;
-    final latestHive = latestInspection == null
-        ? null
-        : DemoData.hiveById(latestInspection.hiveId);
-
     return Scaffold(
       appBar: AppBar(title: const Text('Bienenhalter-App')),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Text('Dashboard', style: Theme.of(context).textTheme.headlineMedium),
-          const SizedBox(height: 8),
-          Text(
-            'Dein Überblick für die nächsten Kontrollen.',
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-          const SizedBox(height: 24),
-          _MetricGrid(
+      body: FutureBuilder<_DashboardData>(
+        future: _loadDashboardData(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final data = snapshot.data!;
+          return ListView(
+            padding: const EdgeInsets.all(16),
             children: [
-              _MetricCard(
-                title: 'Aktive Völker',
-                value: activeHives.toString(),
-                icon: Icons.hive_outlined,
+              Text(
+                'Dashboard',
+                style: Theme.of(context).textTheme.headlineMedium,
               ),
-              _MetricCard(
-                title: 'Offene Aufgaben',
-                value: openTasks.toString(),
-                icon: Icons.task_alt,
+              const SizedBox(height: 8),
+              Text(
+                'Dein Ueberblick fuer die naechsten Kontrollen.',
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              const SizedBox(height: 24),
+              _MetricGrid(
                 children: [
-                  Text(
-                    'Letzte Kontrolle',
-                    style: Theme.of(context).textTheme.titleMedium,
+                  _MetricCard(
+                    title: 'Aktive Voelker',
+                    value: data.activeHives.toString(),
+                    icon: Icons.hive_outlined,
                   ),
-                  const SizedBox(height: 8),
-                  if (latestInspection == null)
-                    const Text('Es wurde noch keine Kontrolle erfasst.')
-                  else ...[
-                    Text(
-                      '${latestHive?.number ?? 'Unbekanntes Volk'} am '
-                      '${formatDate(latestInspection.date)}',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(latestInspection.notes),
-                  ],
+                  _MetricCard(
+                    title: 'Offene Aufgaben',
+                    value: data.openTasks.toString(),
+                    icon: Icons.task_alt,
+                  ),
                 ],
               ),
-            ),
-          ),
-          const SizedBox(height: 24),
-          FilledButton.icon(
-            onPressed: () => Navigator.pushNamed(context, AppRoutes.hives),
-            icon: const Icon(Icons.list_alt),
-            label: const Text('Völker ansehen'),
-          ),
-          const SizedBox(height: 12),
-          OutlinedButton.icon(
-            onPressed: () => Navigator.pushNamed(context, AppRoutes.tasks),
-            icon: const Icon(Icons.checklist),
-            label: const Text('Aufgaben öffnen'),
-          ),
-        ],
+              const SizedBox(height: 16),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Letzte Kontrolle',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 8),
+                      if (data.latestInspection == null)
+                        const Text('Es wurde noch keine Kontrolle erfasst.')
+                      else ...[
+                        Text(
+                          '${data.latestHive?.number ?? 'Unbekanntes Volk'} am '
+                          '${formatDate(data.latestInspection!.date)}',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(data.latestInspection!.notes),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              FilledButton.icon(
+                onPressed: () => Navigator.pushNamed(context, AppRoutes.hives),
+                icon: const Icon(Icons.list_alt),
+                label: const Text('Voelker ansehen'),
+              ),
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: () => Navigator.pushNamed(context, AppRoutes.tasks),
+                icon: const Icon(Icons.checklist),
+                label: const Text('Aufgaben oeffnen'),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
+
+  Future<_DashboardData> _loadDashboardData() async {
+    final repositories = AppRepositories.instance;
+    final hives = await repositories.hives.getAll();
+    final tasks = await repositories.tasks.getAllSorted();
+    final latestInspection = await repositories.inspections.latest();
+    final latestHive = latestInspection == null
+        ? null
+        : await repositories.hives.getById(latestInspection.hiveId);
+
+    return _DashboardData(
+      activeHives: hives
+          .where((hive) => hive.status != HiveStatus.inactive)
+          .length,
+      openTasks: tasks
+          .where((task) => task.status == BeekeeperTaskStatus.open)
+          .length,
+      latestInspection: latestInspection,
+      latestHive: latestHive,
+    );
+  }
+}
+
+class _DashboardData {
+  const _DashboardData({
+    required this.activeHives,
+    required this.openTasks,
+    required this.latestInspection,
+    required this.latestHive,
+  });
+
+  final int activeHives;
+  final int openTasks;
+  final Inspection? latestInspection;
+  final Hive? latestHive;
 }
 
 class _MetricGrid extends StatelessWidget {

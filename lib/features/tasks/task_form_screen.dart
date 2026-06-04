@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../core/date_format.dart';
-import '../../core/demo/demo_data.dart';
 import '../../core/models/beekeeper_task.dart';
+import '../../core/models/hive.dart';
+import '../../core/services/app_repositories.dart';
 
 class TaskFormArguments {
   const TaskFormArguments({this.taskId, this.initialHiveId});
@@ -25,6 +26,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
 
+  late Future<List<Hive>> _hivesFuture;
   BeekeeperTask? _existingTask;
   String? _selectedHiveId;
   BeekeeperTaskCategory _category = BeekeeperTaskCategory.inspection;
@@ -37,10 +39,15 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
   @override
   void initState() {
     super.initState();
+    _hivesFuture = AppRepositories.instance.hives.getAll();
+    _selectedHiveId = widget.arguments?.initialHiveId;
+    _loadExistingTask();
+  }
 
+  Future<void> _loadExistingTask() async {
     final taskId = widget.arguments?.taskId;
     if (taskId != null) {
-      _existingTask = DemoData.taskById(taskId);
+      _existingTask = await AppRepositories.instance.tasks.getById(taskId);
       final task = _existingTask!;
       _titleController.text = task.title;
       _descriptionController.text = task.description;
@@ -51,8 +58,9 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
       _dueTime = task.dueTime == null
           ? null
           : TimeOfDay(hour: task.dueTime!.hour, minute: task.dueTime!.minute);
-    } else {
-      _selectedHiveId = widget.arguments?.initialHiveId;
+      if (mounted) {
+        setState(() {});
+      }
     }
   }
 
@@ -105,23 +113,33 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    DropdownButtonFormField<String>(
-                      initialValue: _selectedHiveId,
-                      decoration: const InputDecoration(
-                        labelText: 'Volk',
-                        border: OutlineInputBorder(),
-                      ),
-                      items: [
-                        for (final hive in DemoData.hives)
-                          DropdownMenuItem(
-                            value: hive.id,
-                            child: Text(hive.number),
+                    FutureBuilder<List<Hive>>(
+                      future: _hivesFuture,
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          return const LinearProgressIndicator();
+                        }
+
+                        return DropdownButtonFormField<String>(
+                          initialValue: _selectedHiveId,
+                          decoration: const InputDecoration(
+                            labelText: 'Volk',
+                            border: OutlineInputBorder(),
                           ),
-                      ],
-                      validator: (value) =>
-                          value == null ? 'Bitte ein Volk auswaehlen.' : null,
-                      onChanged: (value) {
-                        setState(() => _selectedHiveId = value);
+                          items: [
+                            for (final hive in snapshot.data!)
+                              DropdownMenuItem(
+                                value: hive.id,
+                                child: Text(hive.number),
+                              ),
+                          ],
+                          validator: (value) => value == null
+                              ? 'Bitte ein Volk auswaehlen.'
+                              : null,
+                          onChanged: (value) {
+                            setState(() => _selectedHiveId = value);
+                          },
+                        );
                       },
                     ),
                     const SizedBox(height: 12),
@@ -234,7 +252,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
     setState(() => _dueTime = pickedTime);
   }
 
-  void _saveTask() {
+  Future<void> _saveTask() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -263,10 +281,9 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
       completedAt: _existingTask?.completedAt,
     );
 
-    if (_isEditing) {
-      DemoData.updateTask(task);
-    } else {
-      DemoData.addTask(task);
+    await AppRepositories.instance.tasks.upsert(task);
+    if (!mounted) {
+      return;
     }
 
     ScaffoldMessenger.of(context).showSnackBar(

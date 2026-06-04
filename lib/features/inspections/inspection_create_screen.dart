@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../app/app_routes.dart';
 import '../../core/date_format.dart';
-import '../../core/demo/demo_data.dart';
+import '../../core/models/hive.dart';
 import '../../core/models/inspection.dart';
+import '../../core/services/app_repositories.dart';
 
 class InspectionCreateScreen extends StatefulWidget {
   const InspectionCreateScreen({super.key, required this.hiveId});
@@ -23,6 +24,7 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
   final _notesController = TextEditingController();
 
   String? _selectedHiveId;
+  late Future<List<Hive>> _hivesFuture;
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _selectedTime = TimeOfDay.now();
 
@@ -52,6 +54,7 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
   void initState() {
     super.initState();
     _selectedHiveId = widget.hiveId;
+    _hivesFuture = AppRepositories.instance.hives.getAll();
   }
 
   @override
@@ -66,10 +69,6 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedHive = _selectedHiveId == null
-        ? null
-        : DemoData.hiveById(_selectedHiveId!);
-
     return Scaffold(
       appBar: AppBar(title: const Text('Kontrolle erfassen')),
       body: Form(
@@ -78,31 +77,41 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
           padding: const EdgeInsets.all(16),
           children: [
             Text(
-              selectedHive == null
+              _selectedHiveId == null
                   ? 'Neue Stockkontrolle'
-                  : selectedHive.number,
+                  : 'Kontrolle erfassen',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 16),
             _SectionCard(
               title: 'Allgemein',
               children: [
-                DropdownButtonFormField<String>(
-                  initialValue: _selectedHiveId,
-                  decoration: const InputDecoration(
-                    labelText: 'Volk',
-                    border: OutlineInputBorder(),
-                  ),
-                  items: [
-                    for (final hive in DemoData.hives)
-                      DropdownMenuItem(
-                        value: hive.id,
-                        child: Text(hive.number),
+                FutureBuilder<List<Hive>>(
+                  future: _hivesFuture,
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const LinearProgressIndicator();
+                    }
+
+                    return DropdownButtonFormField<String>(
+                      initialValue: _selectedHiveId,
+                      decoration: const InputDecoration(
+                        labelText: 'Volk',
+                        border: OutlineInputBorder(),
                       ),
-                  ],
-                  validator: (value) =>
-                      value == null ? 'Bitte ein Volk auswaehlen.' : null,
-                  onChanged: (value) => setState(() => _selectedHiveId = value),
+                      items: [
+                        for (final hive in snapshot.data!)
+                          DropdownMenuItem(
+                            value: hive.id,
+                            child: Text(hive.number),
+                          ),
+                      ],
+                      validator: (value) =>
+                          value == null ? 'Bitte ein Volk auswaehlen.' : null,
+                      onChanged: (value) =>
+                          setState(() => _selectedHiveId = value),
+                    );
+                  },
                 ),
                 const SizedBox(height: 12),
                 _PickerTile(
@@ -373,7 +382,7 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
     }
   }
 
-  void _saveInspection() {
+  Future<void> _saveInspection() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -418,7 +427,10 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
       notes: _notesController.text.trim(),
     );
 
-    DemoData.addInspection(inspection);
+    await AppRepositories.instance.inspections.add(inspection);
+    if (!mounted) {
+      return;
+    }
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Kontrolle wurde gespeichert.')),
     );

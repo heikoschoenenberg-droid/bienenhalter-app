@@ -2,32 +2,80 @@ import 'package:flutter/material.dart';
 
 import '../../app/app_routes.dart';
 import '../../core/date_format.dart';
-import '../../core/demo/demo_data.dart';
+import '../../core/models/bee_stand.dart';
+import '../../core/models/beekeeper_task.dart';
 import '../../core/models/hive.dart';
+import '../../core/services/app_repositories.dart';
 
 class HiveListScreen extends StatelessWidget {
   const HiveListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final hives = DemoData.hives;
-
     return Scaffold(
       appBar: AppBar(title: const Text('Voelker')),
-      body: ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemCount: hives.length + 1,
-        separatorBuilder: (context, index) => const SizedBox(height: 12),
-        itemBuilder: (context, index) {
-          if (index == 0) {
-            return const _HiveFilterPlaceholder();
+      body: FutureBuilder<_HiveListData>(
+        future: _loadData(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
           }
 
-          final hive = hives[index - 1];
-          return _HiveCard(hive: hive);
+          final data = snapshot.data!;
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: data.hives.length + 1,
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return const _HiveFilterPlaceholder();
+              }
+
+              final hive = data.hives[index - 1];
+              return _HiveCard(
+                hive: hive,
+                beeStand: data.beeStandById(hive.beeStandId),
+                openTasks: data.openTasksByHive[hive.id] ?? const [],
+              );
+            },
+          );
         },
       ),
     );
+  }
+
+  Future<_HiveListData> _loadData() async {
+    final repositories = AppRepositories.instance;
+    final hives = await repositories.hives.getAll();
+    final beeStands = await repositories.apiaries.getAll();
+    final tasks = await repositories.tasks.getAllSorted();
+    final openTasksByHive = <String, List<BeekeeperTask>>{};
+
+    for (final task in tasks.where((task) => task.isOpen)) {
+      openTasksByHive.putIfAbsent(task.hiveId, () => []).add(task);
+    }
+
+    return _HiveListData(
+      hives: hives,
+      beeStands: beeStands,
+      openTasksByHive: openTasksByHive,
+    );
+  }
+}
+
+class _HiveListData {
+  const _HiveListData({
+    required this.hives,
+    required this.beeStands,
+    required this.openTasksByHive,
+  });
+
+  final List<Hive> hives;
+  final List<BeeStand> beeStands;
+  final Map<String, List<BeekeeperTask>> openTasksByHive;
+
+  BeeStand beeStandById(String id) {
+    return beeStands.firstWhere((beeStand) => beeStand.id == id);
   }
 }
 
@@ -60,10 +108,10 @@ class _HiveFilterPlaceholder extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            Wrap(
+            const Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: const [
+              children: [
                 Chip(label: Text('Alle')),
                 Chip(label: Text('Aktiv')),
                 Chip(label: Text('Beobachten')),
@@ -78,15 +126,19 @@ class _HiveFilterPlaceholder extends StatelessWidget {
 }
 
 class _HiveCard extends StatelessWidget {
-  const _HiveCard({required this.hive});
+  const _HiveCard({
+    required this.hive,
+    required this.beeStand,
+    required this.openTasks,
+  });
 
   final Hive hive;
+  final BeeStand beeStand;
+  final List<BeekeeperTask> openTasks;
 
   @override
   Widget build(BuildContext context) {
-    final beeStand = DemoData.beeStandById(hive.beeStandId);
-    final latestInspection = DemoData.latestInspectionForHive(hive.id);
-    final warnings = DemoData.warningsForHive(hive.id);
+    final warnings = _warningsForHive(hive, openTasks);
 
     return Card(
       child: InkWell(
@@ -135,7 +187,7 @@ class _HiveCard extends StatelessWidget {
                   ),
                   _InfoChip(
                     icon: Icons.fact_check_outlined,
-                    label: formatDate(latestInspection?.date),
+                    label: formatDate(hive.lastInspectionDate),
                   ),
                 ],
               ),
@@ -163,6 +215,22 @@ class _HiveCard extends StatelessWidget {
     );
   }
 
+  List<String> _warningsForHive(Hive hive, List<BeekeeperTask> tasks) {
+    final warnings = <String>{};
+    final today = DateTime.now();
+    final latest = hive.lastInspectionDate;
+
+    if (latest == null || today.difference(latest).inDays >= 7) {
+      warnings.add('Kontrolle faellig');
+    }
+    for (final task in tasks) {
+      if (!task.dueDate.isAfter(today.add(const Duration(days: 7)))) {
+        warnings.add(task.warningLabel);
+      }
+    }
+    return warnings.toList();
+  }
+
   String _shortHiveNumber(String number) {
     return number.replaceAll('Volk ', '').replaceAll('Ableger ', 'A');
   }
@@ -183,10 +251,18 @@ class _StatusPill extends StatelessWidget {
     };
 
     return Chip(
-      label: Text(status.statusLabel),
+      label: Text(_statusLabel(status)),
       backgroundColor: color,
       visualDensity: VisualDensity.compact,
     );
+  }
+
+  String _statusLabel(HiveStatus status) {
+    return switch (status) {
+      HiveStatus.active => 'Aktiv',
+      HiveStatus.needsAttention => 'Beobachten',
+      HiveStatus.inactive => 'Inaktiv',
+    };
   }
 }
 
@@ -206,15 +282,5 @@ class _InfoChip extends StatelessWidget {
         Text(label),
       ],
     );
-  }
-}
-
-extension on HiveStatus {
-  String get statusLabel {
-    return switch (this) {
-      HiveStatus.active => 'Aktiv',
-      HiveStatus.needsAttention => 'Beobachten',
-      HiveStatus.inactive => 'Inaktiv',
-    };
   }
 }
