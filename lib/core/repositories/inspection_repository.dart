@@ -27,6 +27,13 @@ class InspectionRepository {
     return rows.map(_toModel).toList();
   }
 
+  Future<Inspection> getById(String id) async {
+    final row = await (_database.select(
+      _database.inspections,
+    )..where((table) => table.id.equals(id))).getSingle();
+    return _toModel(row);
+  }
+
   Future<Inspection?> latestForHive(String hiveId) async {
     final row =
         await (_database.select(_database.inspections)
@@ -37,6 +44,10 @@ class InspectionRepository {
               ..limit(1))
             .getSingleOrNull();
     return row == null ? null : _toModel(row);
+  }
+
+  Future<Inspection?> getLatestForHive(String hiveId) {
+    return latestForHive(hiveId);
   }
 
   Future<Inspection?> latest() async {
@@ -50,11 +61,23 @@ class InspectionRepository {
     return row == null ? null : _toModel(row);
   }
 
-  Future<void> add(Inspection inspection) async {
+  Future<void> add(Inspection inspection) {
+    return createInspection(inspection);
+  }
+
+  Future<void> createInspection(Inspection inspection) {
+    return upsert(inspection);
+  }
+
+  Future<void> updateInspection(Inspection inspection) {
+    return upsert(inspection);
+  }
+
+  Future<void> upsert(Inspection inspection) async {
     final now = DateTime.now();
     await _database
         .into(_database.inspections)
-        .insert(
+        .insertOnConflictUpdate(
           db.InspectionsCompanion.insert(
             id: inspection.id,
             hiveId: inspection.hiveId,
@@ -89,6 +112,13 @@ class InspectionRepository {
             updatedAt: now,
           ),
         );
+    AppDataEvents.notifyChanged();
+  }
+
+  Future<void> deleteInspection(String inspectionId) async {
+    await (_database.delete(
+      _database.inspections,
+    )..where((table) => table.id.equals(inspectionId))).go();
     AppDataEvents.notifyChanged();
   }
 

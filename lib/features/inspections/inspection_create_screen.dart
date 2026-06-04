@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 
-import '../../app/app_routes.dart';
 import '../../core/date_format.dart';
 import '../../core/models/hive.dart';
 import '../../core/models/inspection.dart';
 import '../../core/services/app_repositories.dart';
 
-class InspectionCreateScreen extends StatefulWidget {
-  const InspectionCreateScreen({super.key, required this.hiveId});
+class InspectionFormArguments {
+  const InspectionFormArguments({this.hiveId, this.inspectionId});
 
   final String? hiveId;
+  final String? inspectionId;
+}
+
+class InspectionCreateScreen extends StatefulWidget {
+  const InspectionCreateScreen({super.key, required this.arguments});
+
+  final InspectionFormArguments? arguments;
 
   @override
   State<InspectionCreateScreen> createState() => _InspectionCreateScreenState();
@@ -25,6 +31,7 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
 
   String? _selectedHiveId;
   late Future<List<Hive>> _hivesFuture;
+  Inspection? _existingInspection;
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _selectedTime = TimeOfDay.now();
 
@@ -50,11 +57,14 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
   bool _feedingDone = false;
   String _feedType = 'kein Futter';
 
+  bool get _isEditing => _existingInspection != null;
+
   @override
   void initState() {
     super.initState();
-    _selectedHiveId = widget.hiveId;
+    _selectedHiveId = widget.arguments?.hiveId;
     _hivesFuture = AppRepositories.instance.hives.getAll();
+    _loadExistingInspection();
   }
 
   @override
@@ -67,10 +77,64 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
     super.dispose();
   }
 
+  Future<void> _loadExistingInspection() async {
+    final inspectionId = widget.arguments?.inspectionId;
+    if (inspectionId == null) {
+      return;
+    }
+
+    final inspection = await AppRepositories.instance.inspections.getById(
+      inspectionId,
+    );
+    _existingInspection = inspection;
+    _selectedHiveId = inspection.hiveId;
+    _selectedDate = DateTime(
+      inspection.date.year,
+      inspection.date.month,
+      inspection.date.day,
+    );
+    _selectedTime = TimeOfDay(
+      hour: inspection.date.hour,
+      minute: inspection.date.minute,
+    );
+    _mood = inspection.mood;
+    _queenSeen = inspection.queenSeen;
+    _combPosition = inspection.combPosition;
+    _queenCellsSeen = inspection.queenCellsSeen;
+    _swarmCellsSeen = inspection.swarmCellsSeen;
+    _emergencyCellsSeen = inspection.emergencyCellsSeen;
+    _cellsRemoved = inspection.cellsRemoved;
+    _droneFrameFillLevel = inspection.droneFrameFillLevel;
+    _droneFrameRemoved = inspection.droneFrameRemoved;
+    _droneFrameRenewed = inspection.droneFrameRenewed;
+    _colonyStrength = inspection.colonyStrength;
+    _broodFramesController.text = inspection.broodFrameCount.toString();
+    _feedStatus = inspection.feedStatus;
+    _queenColor = inspection.queenColor;
+    _queenExcluderInserted = inspection.queenExcluderInserted;
+    _honeySupersController.text = inspection.honeySuperCount.toString();
+    _honeySuperFillLevel = inspection.honeySuperFillLevel;
+    _honeyCappingState = inspection.honeyCappingState;
+    _honeyWaterController.text = inspection.honeyWaterContent?.toString() ?? '';
+    _beeEscapeInserted = inspection.beeEscapeInserted;
+    _varroaTreatmentDone = inspection.varroaTreatmentDone;
+    _varroaTreatment = inspection.varroaTreatment;
+    _feedingDone = inspection.feedingDone;
+    _feedType = inspection.feedType;
+    _feedAmountController.text = inspection.feedAmount?.toString() ?? '';
+    _notesController.text = inspection.notes;
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Kontrolle erfassen')),
+      appBar: AppBar(
+        title: Text(_isEditing ? 'Kontrolle bearbeiten' : 'Kontrolle erfassen'),
+      ),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -79,6 +143,8 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
             Text(
               _selectedHiveId == null
                   ? 'Neue Stockkontrolle'
+                  : _isEditing
+                  ? 'Stockkontrolle bearbeiten'
                   : 'Kontrolle erfassen',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
@@ -94,6 +160,9 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
                     }
 
                     return DropdownButtonFormField<String>(
+                      key: ValueKey(
+                        'inspection-hive-${_selectedHiveId ?? 'none'}',
+                      ),
                       initialValue: _selectedHiveId,
                       decoration: const InputDecoration(
                         labelText: 'Volk',
@@ -344,7 +413,9 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
             FilledButton.icon(
               onPressed: _saveInspection,
               icon: const Icon(Icons.save),
-              label: const Text('Kontrolle speichern'),
+              label: Text(
+                _isEditing ? 'Aenderungen speichern' : 'Kontrolle speichern',
+              ),
             ),
           ],
         ),
@@ -395,8 +466,11 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
       _selectedTime.minute,
     );
 
+    final existingInspection = _existingInspection;
     final inspection = Inspection(
-      id: 'inspection-${DateTime.now().microsecondsSinceEpoch}',
+      id:
+          existingInspection?.id ??
+          'inspection-${DateTime.now().microsecondsSinceEpoch}',
       hiveId: _selectedHiveId!,
       date: date,
       mood: _mood,
@@ -427,18 +501,24 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
       notes: _notesController.text.trim(),
     );
 
-    await AppRepositories.instance.inspections.add(inspection);
+    if (_isEditing) {
+      await AppRepositories.instance.inspections.updateInspection(inspection);
+    } else {
+      await AppRepositories.instance.inspections.createInspection(inspection);
+    }
     if (!mounted) {
       return;
     }
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Kontrolle wurde gespeichert.')),
+      SnackBar(
+        content: Text(
+          _isEditing
+              ? 'Kontrolle wurde aktualisiert.'
+              : 'Kontrolle wurde gespeichert.',
+        ),
+      ),
     );
-    Navigator.pushReplacementNamed(
-      context,
-      AppRoutes.hiveDetail,
-      arguments: inspection.hiveId,
-    );
+    Navigator.pop(context, true);
   }
 
   String? _validateNonNegativeInt(String? value) {
@@ -560,6 +640,7 @@ class _DropdownField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: DropdownButtonFormField<String>(
+        key: ValueKey('$label-$value'),
         initialValue: value,
         decoration: InputDecoration(
           labelText: label,

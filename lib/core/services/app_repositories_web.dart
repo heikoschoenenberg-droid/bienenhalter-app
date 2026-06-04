@@ -151,9 +151,17 @@ class WebInspectionRepository {
       ..sort((a, b) => b.date.compareTo(a.date));
   }
 
+  Future<Inspection> getById(String id) async {
+    return _store.inspections.firstWhere((inspection) => inspection.id == id);
+  }
+
   Future<Inspection?> latestForHive(String hiveId) async {
     final inspections = await getForHive(hiveId);
     return inspections.isEmpty ? null : inspections.first;
+  }
+
+  Future<Inspection?> getLatestForHive(String hiveId) {
+    return latestForHive(hiveId);
   }
 
   Future<Inspection?> latest() async {
@@ -161,8 +169,35 @@ class WebInspectionRepository {
     return inspections.isEmpty ? null : inspections.first;
   }
 
-  Future<void> add(Inspection inspection) async {
-    _store.inspections.add(inspection);
+  Future<void> add(Inspection inspection) {
+    return createInspection(inspection);
+  }
+
+  Future<void> createInspection(Inspection inspection) {
+    return upsert(inspection);
+  }
+
+  Future<void> updateInspection(Inspection inspection) {
+    return upsert(inspection);
+  }
+
+  Future<void> upsert(Inspection inspection) async {
+    final index = _store.inspections.indexWhere(
+      (item) => item.id == inspection.id,
+    );
+    if (index == -1) {
+      _store.inspections.add(inspection);
+    } else {
+      _store.inspections[index] = inspection;
+    }
+    _store.save();
+    AppDataEvents.notifyChanged();
+  }
+
+  Future<void> deleteInspection(String inspectionId) async {
+    _store.inspections.removeWhere(
+      (inspection) => inspection.id == inspectionId,
+    );
     _store.save();
     AppDataEvents.notifyChanged();
   }

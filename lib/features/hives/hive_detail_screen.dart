@@ -9,6 +9,7 @@ import '../../core/models/inspection.dart';
 import '../../core/services/app_data_listener.dart';
 import '../../core/services/app_repositories.dart';
 import 'hive_form_screen.dart';
+import '../inspections/inspection_create_screen.dart';
 import '../tasks/task_form_screen.dart';
 
 class HiveDetailScreen extends StatefulWidget {
@@ -91,6 +92,98 @@ class _HiveDetailScreenState extends State<HiveDetailScreen>
     }
   }
 
+  Future<void> _openInspectionForm(String hiveId) async {
+    final changed = await Navigator.pushNamed(
+      context,
+      AppRoutes.inspectionCreate,
+      arguments: hiveId,
+    );
+
+    if (changed == true && mounted) {
+      await _reload();
+    }
+  }
+
+  Future<void> _openInspectionHistory(String hiveId) async {
+    final changed = await Navigator.pushNamed(
+      context,
+      AppRoutes.inspectionHistory,
+      arguments: hiveId,
+    );
+
+    if (changed == true && mounted) {
+      await _reload();
+    }
+  }
+
+  Future<void> _openInspectionDetail(String inspectionId) async {
+    final changed = await Navigator.pushNamed(
+      context,
+      AppRoutes.inspectionDetail,
+      arguments: inspectionId,
+    );
+
+    if (changed == true && mounted) {
+      await _reload();
+    }
+  }
+
+  Future<void> _openInspectionEditForm(Inspection inspection) async {
+    final changed = await Navigator.pushNamed(
+      context,
+      AppRoutes.inspectionCreate,
+      arguments: InspectionFormArguments(
+        hiveId: inspection.hiveId,
+        inspectionId: inspection.id,
+      ),
+    );
+
+    if (changed == true && mounted) {
+      await _reload();
+    }
+  }
+
+  Future<void> _confirmDeleteInspection(Inspection inspection) async {
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Kontrolle loeschen?'),
+          content: const Text(
+            'Moechtest du diese Kontrolle wirklich loeschen?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Abbrechen'),
+            ),
+            FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.error,
+                foregroundColor: Theme.of(context).colorScheme.onError,
+              ),
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Loeschen'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (shouldDelete != true) {
+      return;
+    }
+
+    await AppRepositories.instance.inspections.deleteInspection(inspection.id);
+    if (!mounted) {
+      return;
+    }
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Kontrolle wurde geloescht.')));
+    await _reload();
+  }
+
   Future<void> _completeTask(String taskId) async {
     debugPrint('HiveDetailScreen: completing task $taskId');
     await AppRepositories.instance.tasks.complete(taskId);
@@ -139,9 +232,13 @@ class _HiveDetailScreenState extends State<HiveDetailScreen>
               Text('${data.beeStand.name} - ${data.beeStand.location}'),
               const SizedBox(height: 20),
               _ActionGrid(
-                hiveId: hive.id,
                 onCreateTask: () => _openTaskForm(hive.id),
                 onEditHive: () => _openHiveForm(hive.id),
+                onCreateInspection: () => _openInspectionForm(hive.id),
+                onOpenHistory: () => _openInspectionHistory(hive.id),
+                onOpenLatestInspection: latestInspection == null
+                    ? null
+                    : () => _openInspectionDetail(latestInspection.id),
               ),
               const SizedBox(height: 20),
               _SectionCard(
@@ -168,7 +265,12 @@ class _HiveDetailScreenState extends State<HiveDetailScreen>
                   if (latestInspection == null)
                     const Text('Noch keine Kontrolle erfasst.')
                   else
-                    _InspectionSummary(inspection: latestInspection),
+                    _InspectionSummary(
+                      inspection: latestInspection,
+                      onEdit: () => _openInspectionEditForm(latestInspection),
+                      onDelete: () =>
+                          _confirmDeleteInspection(latestInspection),
+                    ),
                 ],
               ),
               const SizedBox(height: 12),
@@ -242,14 +344,18 @@ class _HiveDetailData {
 
 class _ActionGrid extends StatelessWidget {
   const _ActionGrid({
-    required this.hiveId,
     required this.onCreateTask,
     required this.onEditHive,
+    required this.onCreateInspection,
+    required this.onOpenHistory,
+    required this.onOpenLatestInspection,
   });
 
-  final String hiveId;
   final VoidCallback onCreateTask;
   final VoidCallback onEditHive;
+  final VoidCallback onCreateInspection;
+  final VoidCallback onOpenHistory;
+  final VoidCallback? onOpenLatestInspection;
 
   @override
   Widget build(BuildContext context) {
@@ -258,11 +364,7 @@ class _ActionGrid extends StatelessWidget {
         final isNarrow = constraints.maxWidth < 560;
         final actions = [
           FilledButton.icon(
-            onPressed: () => Navigator.pushNamed(
-              context,
-              AppRoutes.inspectionCreate,
-              arguments: hiveId,
-            ),
+            onPressed: onCreateInspection,
             icon: const Icon(Icons.add_task),
             label: const Text('Neue Kontrolle'),
           ),
@@ -277,14 +379,16 @@ class _ActionGrid extends StatelessWidget {
             label: const Text('Aufgabe anlegen'),
           ),
           OutlinedButton.icon(
-            onPressed: () => Navigator.pushNamed(
-              context,
-              AppRoutes.inspectionHistory,
-              arguments: hiveId,
-            ),
+            onPressed: onOpenHistory,
             icon: const Icon(Icons.history),
-            label: const Text('Historie anzeigen'),
+            label: const Text('Kontrollhistorie'),
           ),
+          if (onOpenLatestInspection != null)
+            OutlinedButton.icon(
+              onPressed: onOpenLatestInspection,
+              icon: const Icon(Icons.open_in_new),
+              label: const Text('Letzte Kontrolle oeffnen'),
+            ),
         ];
 
         if (isNarrow) {
@@ -336,18 +440,45 @@ class _SectionCard extends StatelessWidget {
 }
 
 class _InspectionSummary extends StatelessWidget {
-  const _InspectionSummary({required this.inspection});
+  const _InspectionSummary({
+    required this.inspection,
+    required this.onEdit,
+    required this.onDelete,
+  });
 
   final Inspection inspection;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          formatDateTime(inspection.date),
-          style: Theme.of(context).textTheme.titleSmall,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Text(
+                formatDateTime(inspection.date),
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+            ),
+            IconButton.filledTonal(
+              onPressed: onEdit,
+              icon: const Icon(Icons.edit),
+              tooltip: 'Kontrolle bearbeiten',
+            ),
+            const SizedBox(width: 8),
+            IconButton.filledTonal(
+              onPressed: onDelete,
+              icon: const Icon(Icons.delete_outline),
+              color: colorScheme.error,
+              tooltip: 'Kontrolle loeschen',
+            ),
+          ],
         ),
         const SizedBox(height: 8),
         _DetailRow(label: 'Gemutszustand', value: inspection.mood),
