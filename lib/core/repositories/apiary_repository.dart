@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 
 import '../database/app_database.dart' as db;
 import '../models/bee_stand.dart';
+import '../services/app_data_events.dart';
 
 class ApiaryRepository {
   const ApiaryRepository(this._database);
@@ -13,6 +14,10 @@ class ApiaryRepository {
     return rows.map(_toModel).toList();
   }
 
+  Future<List<BeeStand>> listApiaries() {
+    return getAll();
+  }
+
   Future<BeeStand> getById(String id) async {
     final row = await (_database.select(
       _database.apiaries,
@@ -20,8 +25,12 @@ class ApiaryRepository {
     return _toModel(row);
   }
 
-  Future<void> upsert(BeeStand apiary) {
-    return _database
+  Future<BeeStand> getApiaryById(String id) {
+    return getById(id);
+  }
+
+  Future<void> upsert(BeeStand apiary) async {
+    await _database
         .into(_database.apiaries)
         .insertOnConflictUpdate(
           db.ApiariesCompanion.insert(
@@ -33,6 +42,15 @@ class ApiaryRepository {
             updatedAt: apiary.updatedAt,
           ),
         );
+    AppDataEvents.notifyChanged();
+  }
+
+  Future<void> createApiary(BeeStand apiary) {
+    return upsert(apiary);
+  }
+
+  Future<void> updateApiary(BeeStand apiary) {
+    return upsert(apiary);
   }
 
   BeeStand _toModel(db.Apiary row) {

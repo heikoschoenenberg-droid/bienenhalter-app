@@ -1,5 +1,6 @@
 import 'package:bienenhalter_app/core/database/app_database.dart'
     hide Hive, Inspection;
+import 'package:bienenhalter_app/core/models/bee_stand.dart';
 import 'package:bienenhalter_app/core/models/beekeeper_task.dart';
 import 'package:bienenhalter_app/core/models/hive.dart';
 import 'package:bienenhalter_app/core/models/inspection.dart';
@@ -42,6 +43,36 @@ void main() {
     final seededHives = await hives.getAll();
 
     expect(seededHives.length, greaterThanOrEqualTo(5));
+  });
+
+  test('apiary can be created and updated', () async {
+    final apiary = BeeStand(
+      id: 'test-apiary',
+      name: 'Teststand',
+      location: 'Testort',
+      notes: 'Angelegt im Test',
+      createdAt: DateTime(2026, 6, 4),
+      updatedAt: DateTime(2026, 6, 4),
+    );
+
+    await apiaries.createApiary(apiary);
+
+    final listAfterCreate = await apiaries.listApiaries();
+    expect(listAfterCreate.any((item) => item.id == apiary.id), isTrue);
+
+    await apiaries.updateApiary(
+      BeeStand(
+        id: apiary.id,
+        name: 'Geaenderter Teststand',
+        location: apiary.location,
+        notes: apiary.notes,
+        createdAt: apiary.createdAt,
+        updatedAt: DateTime(2026, 6, 5),
+      ),
+    );
+
+    final updatedApiary = await apiaries.getApiaryById(apiary.id);
+    expect(updatedApiary.name, 'Geaenderter Teststand');
   });
 
   test('hive can be created and updated', () async {

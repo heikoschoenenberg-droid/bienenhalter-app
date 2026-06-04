@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 
 import '../database/app_database.dart' as db;
 import '../models/inspection.dart';
+import '../services/app_data_events.dart';
 
 class InspectionRepository {
   const InspectionRepository(this._database);
@@ -49,9 +50,9 @@ class InspectionRepository {
     return row == null ? null : _toModel(row);
   }
 
-  Future<void> add(Inspection inspection) {
+  Future<void> add(Inspection inspection) async {
     final now = DateTime.now();
-    return _database
+    await _database
         .into(_database.inspections)
         .insert(
           db.InspectionsCompanion.insert(
@@ -88,6 +89,7 @@ class InspectionRepository {
             updatedAt: now,
           ),
         );
+    AppDataEvents.notifyChanged();
   }
 
   Inspection _toModel(db.Inspection row) {

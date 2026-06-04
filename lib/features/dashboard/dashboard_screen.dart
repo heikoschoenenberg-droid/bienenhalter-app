@@ -5,17 +5,49 @@ import '../../core/date_format.dart';
 import '../../core/models/beekeeper_task.dart';
 import '../../core/models/hive.dart';
 import '../../core/models/inspection.dart';
+import '../../core/services/app_data_listener.dart';
 import '../../core/services/app_repositories.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen>
+    with AppDataListener<DashboardScreen> {
+  late Future<_DashboardData> _future;
+
+  @override
+  void initState() {
+    super.initState();
+    _future = _loadDashboardData();
+  }
+
+  Future<void> _reload() async {
+    if (!mounted) {
+      return;
+    }
+    debugPrint('DashboardScreen: reload requested');
+    final future = _loadDashboardData();
+    setState(() {
+      _future = future;
+    });
+    await future;
+  }
+
+  @override
+  void onAppDataChanged() {
+    _reload();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Bienenhalter-App')),
       body: FutureBuilder<_DashboardData>(
-        future: _loadDashboardData(),
+        future: _future,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
@@ -78,13 +110,19 @@ class DashboardScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               FilledButton.icon(
-                onPressed: () => Navigator.pushNamed(context, AppRoutes.hives),
+                onPressed: () => _openAndReload(AppRoutes.hives),
                 icon: const Icon(Icons.list_alt),
                 label: const Text('Voelker ansehen'),
               ),
               const SizedBox(height: 12),
               OutlinedButton.icon(
-                onPressed: () => Navigator.pushNamed(context, AppRoutes.tasks),
+                onPressed: () => _openAndReload(AppRoutes.apiaries),
+                icon: const Icon(Icons.location_on_outlined),
+                label: const Text('Bienenstaende'),
+              ),
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: () => _openAndReload(AppRoutes.tasks),
                 icon: const Icon(Icons.checklist),
                 label: const Text('Aufgaben oeffnen'),
               ),
@@ -95,7 +133,13 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
+  Future<void> _openAndReload(String routeName) async {
+    await Navigator.pushNamed(context, routeName);
+    await _reload();
+  }
+
   Future<_DashboardData> _loadDashboardData() async {
+    debugPrint('DashboardScreen: loading data');
     final repositories = AppRepositories.instance;
     final hives = await repositories.hives.getAll();
     final tasks = await repositories.tasks.getAllSorted();
@@ -104,6 +148,9 @@ class DashboardScreen extends StatelessWidget {
         ? null
         : await repositories.hives.getById(latestInspection.hiveId);
 
+    debugPrint(
+      'DashboardScreen: loaded ${hives.length} hives and ${tasks.length} tasks',
+    );
     return _DashboardData(
       activeHives: hives
           .where((hive) => hive.status == HiveStatus.active)

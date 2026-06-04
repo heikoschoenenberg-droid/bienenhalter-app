@@ -5,9 +5,10 @@ import '../../core/models/hive.dart';
 import '../../core/services/app_repositories.dart';
 
 class HiveFormArguments {
-  const HiveFormArguments({this.hiveId});
+  const HiveFormArguments({this.hiveId, this.initialBeeStandId});
 
   final String? hiveId;
+  final String? initialBeeStandId;
 }
 
 class HiveFormScreen extends StatefulWidget {
@@ -72,6 +73,11 @@ class _HiveFormScreenState extends State<HiveFormScreen> {
       _selectedBeeStandId = hive.beeStandId;
       _queenColor = hive.queenColor;
       _status = hive.status;
+      if (mounted) {
+        setState(() {});
+      }
+    } else if (widget.arguments?.initialBeeStandId != null) {
+      _selectedBeeStandId = widget.arguments!.initialBeeStandId;
     } else if (beeStands.isNotEmpty) {
       _selectedBeeStandId = beeStands.first.id;
     }
@@ -274,7 +280,9 @@ class _HiveFormScreenState extends State<HiveFormScreen> {
   }
 
   Future<void> _saveHive() async {
+    debugPrint('HiveFormScreen: saving hive');
     if (!_formKey.currentState!.validate()) {
+      debugPrint('HiveFormScreen: validation failed');
       return;
     }
 
@@ -301,8 +309,14 @@ class _HiveFormScreenState extends State<HiveFormScreen> {
     );
 
     if (_isEditing) {
+      debugPrint(
+        'HiveFormScreen: updateHive id=${hive.id} number=${hive.number}',
+      );
       await AppRepositories.instance.hives.updateHive(hive);
     } else {
+      debugPrint(
+        'HiveFormScreen: createHive id=${hive.id} number=${hive.number}',
+      );
       await AppRepositories.instance.hives.createHive(hive);
     }
 
@@ -316,6 +330,7 @@ class _HiveFormScreenState extends State<HiveFormScreen> {
         ),
       ),
     );
+    debugPrint('HiveFormScreen: popping with true for id=${hive.id}');
     Navigator.pop(context, true);
   }
 }

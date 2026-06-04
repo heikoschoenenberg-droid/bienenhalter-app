@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 
 import '../database/app_database.dart' as db;
 import '../models/hive.dart';
+import '../services/app_data_events.dart';
 
 class HiveRepository {
   const HiveRepository(this._database);
@@ -30,8 +31,8 @@ class HiveRepository {
     return getById(id);
   }
 
-  Future<void> upsert(Hive hive) {
-    return _database
+  Future<void> upsert(Hive hive) async {
+    await _database
         .into(_database.hives)
         .insertOnConflictUpdate(
           db.HivesCompanion.insert(
@@ -49,6 +50,7 @@ class HiveRepository {
             updatedAt: hive.updatedAt,
           ),
         );
+    AppDataEvents.notifyChanged();
   }
 
   Future<void> createHive(Hive hive) {

@@ -6,6 +6,7 @@ import '../../core/models/bee_stand.dart';
 import '../../core/models/beekeeper_task.dart';
 import '../../core/models/hive.dart';
 import '../../core/models/inspection.dart';
+import '../../core/services/app_data_listener.dart';
 import '../../core/services/app_repositories.dart';
 import 'hive_form_screen.dart';
 import '../tasks/task_form_screen.dart';
@@ -19,7 +20,8 @@ class HiveDetailScreen extends StatefulWidget {
   State<HiveDetailScreen> createState() => _HiveDetailScreenState();
 }
 
-class _HiveDetailScreenState extends State<HiveDetailScreen> {
+class _HiveDetailScreenState extends State<HiveDetailScreen>
+    with AppDataListener<HiveDetailScreen> {
   late Future<_HiveDetailData> _future;
 
   @override
@@ -48,8 +50,21 @@ class _HiveDetailScreenState extends State<HiveDetailScreen> {
     );
   }
 
-  void _reload() {
-    setState(() => _future = _loadData());
+  Future<void> _reload() async {
+    if (!mounted) {
+      return;
+    }
+    debugPrint('HiveDetailScreen: reload requested');
+    final future = _loadData();
+    setState(() {
+      _future = future;
+    });
+    await future;
+  }
+
+  @override
+  void onAppDataChanged() {
+    _reload();
   }
 
   Future<void> _openTaskForm(String hiveId, {String? taskId}) async {
@@ -60,7 +75,7 @@ class _HiveDetailScreenState extends State<HiveDetailScreen> {
     );
 
     if (changed == true && mounted) {
-      _reload();
+      await _reload();
     }
   }
 
@@ -72,13 +87,15 @@ class _HiveDetailScreenState extends State<HiveDetailScreen> {
     );
 
     if (changed == true && mounted) {
-      _reload();
+      await _reload();
     }
   }
 
   Future<void> _completeTask(String taskId) async {
+    debugPrint('HiveDetailScreen: completing task $taskId');
     await AppRepositories.instance.tasks.complete(taskId);
-    _reload();
+    debugPrint('HiveDetailScreen: completed task $taskId');
+    await _reload();
     if (!mounted) {
       return;
     }
@@ -168,7 +185,12 @@ class _HiveDetailScreenState extends State<HiveDetailScreen> {
                         contentPadding: EdgeInsets.zero,
                         leading: Checkbox(
                           value: false,
-                          onChanged: (_) => _completeTask(task.id),
+                          onChanged: (_) {
+                            debugPrint(
+                              'HiveDetailScreen: checkbox changed for ${task.id}',
+                            );
+                            _completeTask(task.id);
+                          },
                         ),
                         title: Text(task.title),
                         subtitle: Text(

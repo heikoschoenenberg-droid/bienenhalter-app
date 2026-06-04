@@ -7,6 +7,7 @@ import '../models/bee_stand.dart';
 import '../models/beekeeper_task.dart';
 import '../models/hive.dart';
 import '../models/inspection.dart';
+import 'app_data_events.dart';
 
 class AppRepositories {
   AppRepositories._()
@@ -36,8 +37,16 @@ class WebApiaryRepository {
     return [..._store.apiaries];
   }
 
+  Future<List<BeeStand>> listApiaries() {
+    return getAll();
+  }
+
   Future<BeeStand> getById(String id) async {
     return _store.apiaries.firstWhere((apiary) => apiary.id == id);
+  }
+
+  Future<BeeStand> getApiaryById(String id) {
+    return getById(id);
   }
 
   Future<void> upsert(BeeStand apiary) async {
@@ -48,6 +57,15 @@ class WebApiaryRepository {
       _store.apiaries[index] = apiary;
     }
     _store.save();
+    AppDataEvents.notifyChanged();
+  }
+
+  Future<void> createApiary(BeeStand apiary) {
+    return upsert(apiary);
+  }
+
+  Future<void> updateApiary(BeeStand apiary) {
+    return upsert(apiary);
   }
 }
 
@@ -81,6 +99,7 @@ class WebHiveRepository {
       _store.hives[index] = hive;
     }
     _store.save();
+    AppDataEvents.notifyChanged();
   }
 
   Future<void> createHive(Hive hive) {
@@ -145,6 +164,7 @@ class WebInspectionRepository {
   Future<void> add(Inspection inspection) async {
     _store.inspections.add(inspection);
     _store.save();
+    AppDataEvents.notifyChanged();
   }
 }
 
@@ -183,6 +203,7 @@ class WebTaskRepository {
       _store.tasks[index] = task;
     }
     _store.save();
+    AppDataEvents.notifyChanged();
   }
 
   Future<void> complete(String taskId) async {

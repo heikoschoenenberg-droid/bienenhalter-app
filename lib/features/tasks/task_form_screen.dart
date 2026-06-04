@@ -253,7 +253,9 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
   }
 
   Future<void> _saveTask() async {
+    debugPrint('TaskFormScreen: saving task');
     if (!_formKey.currentState!.validate()) {
+      debugPrint('TaskFormScreen: validation failed');
       return;
     }
 
@@ -281,6 +283,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
       completedAt: _existingTask?.completedAt,
     );
 
+    debugPrint('TaskFormScreen: upsert task id=${task.id} title=${task.title}');
     await AppRepositories.instance.tasks.upsert(task);
     if (!mounted) {
       return;
@@ -295,6 +298,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
         ),
       ),
     );
+    debugPrint('TaskFormScreen: popping with true for id=${task.id}');
     Navigator.pop(context, true);
   }
 }

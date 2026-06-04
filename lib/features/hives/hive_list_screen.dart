@@ -5,6 +5,7 @@ import '../../core/date_format.dart';
 import '../../core/models/bee_stand.dart';
 import '../../core/models/beekeeper_task.dart';
 import '../../core/models/hive.dart';
+import '../../core/services/app_data_listener.dart';
 import '../../core/services/app_repositories.dart';
 
 class HiveListScreen extends StatefulWidget {
@@ -14,8 +15,13 @@ class HiveListScreen extends StatefulWidget {
   State<HiveListScreen> createState() => _HiveListScreenState();
 }
 
-class _HiveListScreenState extends State<HiveListScreen> {
+class _HiveListScreenState extends State<HiveListScreen>
+    with AppDataListener<HiveListScreen> {
+  final _searchController = TextEditingController();
   late Future<_HiveListData> _future;
+  String _searchQuery = '';
+  HiveStatus? _statusFilter;
+  String? _beeStandFilterId;
 
   @override
   void initState() {
@@ -23,8 +29,27 @@ class _HiveListScreenState extends State<HiveListScreen> {
     _future = _loadData();
   }
 
-  void _reload() {
-    setState(() => _future = _loadData());
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _reload() async {
+    if (!mounted) {
+      return;
+    }
+    debugPrint('HiveListScreen: reload requested');
+    final future = _loadData();
+    setState(() {
+      _future = future;
+    });
+    await future;
+  }
+
+  @override
+  void onAppDataChanged() {
+    _reload();
   }
 
   @override
@@ -44,16 +69,33 @@ class _HiveListScreenState extends State<HiveListScreen> {
           }
 
           final data = snapshot.data!;
+          final filteredHives = _filterHives(data);
           return ListView.separated(
             padding: const EdgeInsets.all(16),
-            itemCount: data.hives.length + 1,
+            itemCount: filteredHives.length + 1,
             separatorBuilder: (context, index) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
               if (index == 0) {
-                return const _HiveFilterPlaceholder();
+                return _HiveFilters(
+                  searchController: _searchController,
+                  searchQuery: _searchQuery,
+                  statusFilter: _statusFilter,
+                  beeStandFilterId: _beeStandFilterId,
+                  beeStands: data.beeStands,
+                  resultCount: filteredHives.length,
+                  onSearchChanged: (value) {
+                    setState(() => _searchQuery = value);
+                  },
+                  onStatusChanged: (value) {
+                    setState(() => _statusFilter = value);
+                  },
+                  onBeeStandChanged: (value) {
+                    setState(() => _beeStandFilterId = value);
+                  },
+                );
               }
 
-              final hive = data.hives[index - 1];
+              final hive = filteredHives[index - 1];
               return _HiveCard(
                 hive: hive,
                 beeStand: data.beeStandById(hive.beeStandId),
@@ -68,13 +110,16 @@ class _HiveListScreenState extends State<HiveListScreen> {
   }
 
   Future<void> _openCreateHive() async {
+    debugPrint('HiveListScreen: opening create hive form');
     final changed = await Navigator.pushNamed(context, AppRoutes.hiveForm);
+    debugPrint('HiveListScreen: returned from hive form changed=$changed');
     if (changed == true && mounted) {
-      _reload();
+      await _reload();
     }
   }
 
   Future<_HiveListData> _loadData() async {
+    debugPrint('HiveListScreen: loading data');
     final repositories = AppRepositories.instance;
     final hives = await repositories.hives.getAll();
     final beeStands = await repositories.apiaries.getAll();
@@ -85,11 +130,36 @@ class _HiveListScreenState extends State<HiveListScreen> {
       openTasksByHive.putIfAbsent(task.hiveId, () => []).add(task);
     }
 
+    debugPrint('HiveListScreen: loaded ${hives.length} hives');
     return _HiveListData(
       hives: hives,
       beeStands: beeStands,
       openTasksByHive: openTasksByHive,
     );
+  }
+
+  List<Hive> _filterHives(_HiveListData data) {
+    final query = _searchQuery.trim().toLowerCase();
+
+    return data.hives.where((hive) {
+      final beeStand = data.beeStandById(hive.beeStandId);
+      final matchesSearch =
+          query.isEmpty ||
+          hive.number.toLowerCase().contains(query) ||
+          hive.name.toLowerCase().contains(query) ||
+          beeStand.name.toLowerCase().contains(query) ||
+          beeStand.location.toLowerCase().contains(query) ||
+          hive.status.label.toLowerCase().contains(query) ||
+          hive.status.name.toLowerCase().contains(query) ||
+          hive.queenColor.toLowerCase().contains(query) ||
+          hive.notes.toLowerCase().contains(query);
+      final matchesStatus =
+          _statusFilter == null || hive.status == _statusFilter;
+      final matchesBeeStand =
+          _beeStandFilterId == null || hive.beeStandId == _beeStandFilterId;
+
+      return matchesSearch && matchesStatus && matchesBeeStand;
+    }).toList();
   }
 }
 
@@ -109,8 +179,28 @@ class _HiveListData {
   }
 }
 
-class _HiveFilterPlaceholder extends StatelessWidget {
-  const _HiveFilterPlaceholder();
+class _HiveFilters extends StatelessWidget {
+  const _HiveFilters({
+    required this.searchController,
+    required this.searchQuery,
+    required this.statusFilter,
+    required this.beeStandFilterId,
+    required this.beeStands,
+    required this.resultCount,
+    required this.onSearchChanged,
+    required this.onStatusChanged,
+    required this.onBeeStandChanged,
+  });
+
+  final TextEditingController searchController;
+  final String searchQuery;
+  final HiveStatus? statusFilter;
+  final String? beeStandFilterId;
+  final List<BeeStand> beeStands;
+  final int resultCount;
+  final ValueChanged<String> onSearchChanged;
+  final ValueChanged<HiveStatus?> onStatusChanged;
+  final ValueChanged<String?> onBeeStandChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -120,32 +210,101 @@ class _HiveFilterPlaceholder extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Suchen und filtern',
-              style: Theme.of(context).textTheme.titleMedium,
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Suchen und filtern',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+                Text('$resultCount Treffer'),
+              ],
             ),
             const SizedBox(height: 12),
             TextField(
-              enabled: false,
+              controller: searchController,
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.search),
                 labelText: 'Volk, Stand oder Status suchen',
                 border: const OutlineInputBorder(),
-                filled: true,
-                fillColor: Theme.of(
-                  context,
-                ).colorScheme.surfaceContainerHighest,
+                suffixIcon: searchQuery.isEmpty
+                    ? null
+                    : IconButton(
+                        onPressed: () {
+                          searchController.clear();
+                          onSearchChanged('');
+                        },
+                        icon: const Icon(Icons.clear),
+                        tooltip: 'Suche leeren',
+                      ),
               ),
+              onChanged: onSearchChanged,
             ),
             const SizedBox(height: 12),
-            const Wrap(
-              spacing: 8,
-              runSpacing: 8,
+            DropdownButtonFormField<String>(
+              key: ValueKey('hive-status-${statusFilter?.name ?? 'all'}'),
+              initialValue: statusFilter?.name ?? 'all',
+              decoration: const InputDecoration(
+                labelText: 'Status',
+                border: OutlineInputBorder(),
+              ),
+              items: [
+                const DropdownMenuItem(value: 'all', child: Text('Alle')),
+                for (final status in HiveStatus.values)
+                  DropdownMenuItem(
+                    value: status.name,
+                    child: Text(status.label),
+                  ),
+              ],
+              onChanged: (value) {
+                onStatusChanged(
+                  value == null || value == 'all'
+                      ? null
+                      : HiveStatus.values.firstWhere(
+                          (status) => status.name == value,
+                        ),
+                );
+              },
+            ),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<String>(
+              key: ValueKey('hive-bee-stand-${beeStandFilterId ?? 'all'}'),
+              initialValue: beeStandFilterId ?? 'all',
+              decoration: const InputDecoration(
+                labelText: 'Bienenstand',
+                border: OutlineInputBorder(),
+              ),
+              items: [
+                const DropdownMenuItem(value: 'all', child: Text('Alle')),
+                for (final beeStand in beeStands)
+                  DropdownMenuItem(
+                    value: beeStand.id,
+                    child: Text('${beeStand.name} - ${beeStand.location}'),
+                  ),
+              ],
+              onChanged: (value) {
+                onBeeStandChanged(
+                  value == null || value == 'all' ? null : value,
+                );
+              },
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
               children: [
-                Chip(label: Text('Alle')),
-                Chip(label: Text('Aktiv')),
-                Chip(label: Text('Beobachten')),
-                Chip(label: Text('Aufgaben offen')),
+                FilterChip(
+                  label: const Text('Alle'),
+                  selected: statusFilter == null,
+                  onSelected: (_) => onStatusChanged(null),
+                ),
+                for (final status in HiveStatus.values)
+                  FilterChip(
+                    label: Text(status.label),
+                    selected: statusFilter == status,
+                    onSelected: (_) => onStatusChanged(status),
+                  ),
               ],
             ),
           ],
@@ -166,7 +325,7 @@ class _HiveCard extends StatelessWidget {
   final Hive hive;
   final BeeStand beeStand;
   final List<BeekeeperTask> openTasks;
-  final VoidCallback onChanged;
+  final Future<void> Function() onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -175,11 +334,14 @@ class _HiveCard extends StatelessWidget {
     return Card(
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onTap: () => Navigator.pushNamed(
-          context,
-          AppRoutes.hiveDetail,
-          arguments: hive.id,
-        ).then((_) => onChanged()),
+        onTap: () async {
+          await Navigator.pushNamed(
+            context,
+            AppRoutes.hiveDetail,
+            arguments: hive.id,
+          );
+          await onChanged();
+        },
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(

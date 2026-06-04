@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 
 import '../database/app_database.dart' as db;
 import '../models/beekeeper_task.dart';
+import '../services/app_data_events.dart';
 
 class TaskRepository {
   const TaskRepository(this._database);
@@ -40,8 +41,8 @@ class TaskRepository {
     return _toModel(row);
   }
 
-  Future<void> upsert(BeekeeperTask task) {
-    return _database
+  Future<void> upsert(BeekeeperTask task) async {
+    await _database
         .into(_database.tasks)
         .insertOnConflictUpdate(
           db.TasksCompanion.insert(
@@ -58,6 +59,7 @@ class TaskRepository {
             updatedAt: DateTime.now(),
           ),
         );
+    AppDataEvents.notifyChanged();
   }
 
   Future<void> complete(String taskId) async {

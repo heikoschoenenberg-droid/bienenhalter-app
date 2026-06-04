@@ -3,19 +3,49 @@ import 'package:flutter/material.dart';
 import '../../core/date_format.dart';
 import '../../core/models/hive.dart';
 import '../../core/models/inspection.dart';
+import '../../core/services/app_data_listener.dart';
 import '../../core/services/app_repositories.dart';
 
-class InspectionHistoryScreen extends StatelessWidget {
+class InspectionHistoryScreen extends StatefulWidget {
   const InspectionHistoryScreen({super.key, required this.hiveId});
 
   final String? hiveId;
+
+  @override
+  State<InspectionHistoryScreen> createState() =>
+      _InspectionHistoryScreenState();
+}
+
+class _InspectionHistoryScreenState extends State<InspectionHistoryScreen>
+    with AppDataListener<InspectionHistoryScreen> {
+  late Future<_InspectionHistoryData> _future;
+
+  @override
+  void initState() {
+    super.initState();
+    _future = _loadData();
+  }
+
+  void _reload() {
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _future = _loadData();
+    });
+  }
+
+  @override
+  void onAppDataChanged() {
+    _reload();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Kontrollhistorie')),
       body: FutureBuilder<_InspectionHistoryData>(
-        future: _loadData(),
+        future: _future,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
@@ -63,12 +93,12 @@ class InspectionHistoryScreen extends StatelessWidget {
   Future<_InspectionHistoryData> _loadData() async {
     final repositories = AppRepositories.instance;
     final hives = await repositories.hives.getAll();
-    final inspections = hiveId == null
+    final inspections = widget.hiveId == null
         ? await repositories.inspections.getAll()
-        : await repositories.inspections.getForHive(hiveId!);
-    final selectedHive = hiveId == null
+        : await repositories.inspections.getForHive(widget.hiveId!);
+    final selectedHive = widget.hiveId == null
         ? null
-        : hives.firstWhere((hive) => hive.id == hiveId);
+        : hives.firstWhere((hive) => hive.id == widget.hiveId);
 
     return _InspectionHistoryData(
       hives: hives,

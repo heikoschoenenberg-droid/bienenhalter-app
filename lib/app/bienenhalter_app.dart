@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../features/dashboard/dashboard_screen.dart';
+import '../features/apiaries/apiary_detail_screen.dart';
+import '../features/apiaries/apiary_form_screen.dart';
+import '../features/apiaries/apiary_list_screen.dart';
 import '../features/hives/hive_detail_screen.dart';
 import '../features/hives/hive_form_screen.dart';
 import '../features/hives/hive_list_screen.dart';
@@ -22,7 +25,7 @@ class BienenhalterApp extends StatelessWidget {
       theme: AppTheme.light(),
       initialRoute: AppRoutes.dashboard,
       onGenerateRoute: (settings) {
-        return MaterialPageRoute<void>(
+        return MaterialPageRoute<Object?>(
           settings: settings,
           builder: (context) => _buildScreen(settings),
         );
@@ -33,9 +36,15 @@ class BienenhalterApp extends StatelessWidget {
   Widget _buildScreen(RouteSettings settings) {
     final arguments = settings.arguments;
     final hiveId = arguments is String ? arguments : null;
+    final apiaryId = arguments is String ? arguments : null;
 
     return switch (settings.name) {
       AppRoutes.dashboard => const DashboardScreen(),
+      AppRoutes.apiaries => const ApiaryListScreen(),
+      AppRoutes.apiaryDetail => ApiaryDetailScreen(apiaryId: apiaryId),
+      AppRoutes.apiaryForm => ApiaryFormScreen(
+        arguments: arguments is ApiaryFormArguments ? arguments : null,
+      ),
       AppRoutes.hives => const HiveListScreen(),
       AppRoutes.hiveDetail => HiveDetailScreen(hiveId: hiveId),
       AppRoutes.hiveForm => HiveFormScreen(
