@@ -206,30 +206,50 @@ class _InspectionSummary extends StatelessWidget {
         ),
         _DetailRow(label: 'Wabensitz', value: inspection.combPosition),
         _DetailRow(
-          label: 'Weiselzellen',
-          value: inspection.queenCellsSeen ? 'gesehen' : 'keine',
+          label: 'Volksstaerke',
+          value: '${inspection.colonyStrength}/10',
         ),
-        _DetailRow(
-          label: 'Schwarmzellen',
-          value: inspection.swarmCellsSeen ? 'gesehen' : 'keine',
-        ),
-        _DetailRow(
-          label: 'Nachschaffung',
-          value: inspection.emergencyCellsSeen ? 'gesehen' : 'keine',
-        ),
-        _DetailRow(label: 'Volksstaerke', value: inspection.colonyStrength),
         _DetailRow(
           label: 'Brutrahmen',
           value: inspection.broodFrameCount.toString(),
         ),
         _DetailRow(
-          label: 'Honigraeume',
+          label: 'Honigraumstatus',
           value:
               '${inspection.honeySuperCount}, ${inspection.honeySuperFillLevel}',
         ),
+        _DetailRow(
+          label: 'Varroa',
+          value: inspection.varroaTreatmentDone
+              ? inspection.varroaTreatment
+              : 'nicht durchgefuehrt',
+        ),
+        _DetailRow(label: 'Auffaelligkeiten', value: _findingsText(inspection)),
         _DetailRow(label: 'Notizen', value: inspection.notes),
       ],
     );
+  }
+
+  String _findingsText(Inspection inspection) {
+    final findings = <String>[];
+
+    if (inspection.queenCellsSeen) {
+      findings.add('Weiselzellen');
+    }
+    if (inspection.swarmCellsSeen) {
+      findings.add('Schwarmzellen');
+    }
+    if (inspection.emergencyCellsSeen) {
+      findings.add('Nachschaffungszellen');
+    }
+    if (inspection.cellsRemoved) {
+      findings.add('Zellen entfernt');
+    }
+    if (inspection.beeEscapeInserted) {
+      findings.add('Bienenflucht eingelegt');
+    }
+
+    return findings.isEmpty ? 'keine' : findings.join(', ');
   }
 }
 

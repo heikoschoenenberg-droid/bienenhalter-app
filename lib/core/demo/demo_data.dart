@@ -71,17 +71,25 @@ class DemoData {
       queenCellsSeen: false,
       swarmCellsSeen: false,
       emergencyCellsSeen: false,
+      cellsRemoved: false,
       droneFrameFillLevel: 'halb gefuellt',
       droneFrameRemoved: false,
-      colonyStrength: 'stark',
+      droneFrameRenewed: false,
+      colonyStrength: 8,
       broodFrameCount: 7,
+      feedStatus: 'ausreichend',
+      queenColor: 'Blau',
       queenExcluderInserted: true,
       honeySuperCount: 2,
       honeySuperFillLevel: 'ca. 60 Prozent',
       honeyCappingState: 'teilweise verdeckelt',
       honeyWaterContent: 18.2,
       beeEscapeInserted: false,
+      varroaTreatmentDone: false,
       varroaTreatment: 'keine Behandlung offen',
+      feedingDone: false,
+      feedType: 'kein Futter',
+      feedAmount: null,
       notes: 'Brutnest geschlossen, Futter ausreichend.',
     ),
     Inspection(
@@ -94,17 +102,25 @@ class DemoData {
       queenCellsSeen: true,
       swarmCellsSeen: true,
       emergencyCellsSeen: false,
+      cellsRemoved: true,
       droneFrameFillLevel: 'voll',
       droneFrameRemoved: true,
-      colonyStrength: 'sehr stark',
+      droneFrameRenewed: true,
+      colonyStrength: 10,
       broodFrameCount: 8,
+      feedStatus: 'knapp',
+      queenColor: 'Gruen',
       queenExcluderInserted: true,
       honeySuperCount: 2,
       honeySuperFillLevel: 'fast voll',
       honeyCappingState: 'mehrheitlich unverdeckelt',
       honeyWaterContent: 19.1,
       beeEscapeInserted: false,
+      varroaTreatmentDone: false,
       varroaTreatment: 'Sommerbehandlung planen',
+      feedingDone: false,
+      feedType: 'kein Futter',
+      feedAmount: null,
       notes: 'Schwarmstimmung beobachten und zeitnah nachsehen.',
     ),
     Inspection(
@@ -117,17 +133,25 @@ class DemoData {
       queenCellsSeen: false,
       swarmCellsSeen: false,
       emergencyCellsSeen: false,
+      cellsRemoved: false,
       droneFrameFillLevel: 'leer',
       droneFrameRemoved: false,
-      colonyStrength: 'mittel',
+      droneFrameRenewed: false,
+      colonyStrength: 5,
       broodFrameCount: 5,
+      feedStatus: 'gut',
+      queenColor: 'Weiss',
       queenExcluderInserted: false,
       honeySuperCount: 1,
       honeySuperFillLevel: 'gering',
       honeyCappingState: 'kaum verdeckelt',
       honeyWaterContent: null,
       beeEscapeInserted: false,
+      varroaTreatmentDone: false,
       varroaTreatment: 'Kontrolle nach Trachtende',
+      feedingDone: false,
+      feedType: 'kein Futter',
+      feedAmount: null,
       notes: 'Junge Koenigin in Eiablage.',
     ),
     Inspection(
@@ -140,17 +164,25 @@ class DemoData {
       queenCellsSeen: false,
       swarmCellsSeen: false,
       emergencyCellsSeen: false,
+      cellsRemoved: false,
       droneFrameFillLevel: 'angelegt',
       droneFrameRemoved: false,
-      colonyStrength: 'stark',
+      droneFrameRenewed: false,
+      colonyStrength: 8,
       broodFrameCount: 6,
+      feedStatus: 'ausreichend',
+      queenColor: 'Blau',
       queenExcluderInserted: true,
       honeySuperCount: 1,
       honeySuperFillLevel: 'halb voll',
       honeyCappingState: 'unverdeckt',
       honeyWaterContent: null,
       beeEscapeInserted: false,
+      varroaTreatmentDone: false,
       varroaTreatment: 'keine',
+      feedingDone: false,
+      feedType: 'kein Futter',
+      feedAmount: null,
       notes: 'Honigraum erweitert.',
     ),
   ];
@@ -214,6 +246,10 @@ class DemoData {
     return hives.firstWhere((hive) => hive.id == id);
   }
 
+  static void addInspection(Inspection inspection) {
+    inspections.add(inspection);
+  }
+
   static List<Inspection> inspectionsForHive(String hiveId) {
     return inspections
         .where((inspection) => inspection.hiveId == hiveId)
@@ -252,11 +288,11 @@ class DemoData {
   }
 
   static List<String> warningsForHive(String hiveId) {
-    final hive = hiveById(hiveId);
+    final latestInspection = latestInspectionForHive(hiveId);
     final warnings = <String>{};
 
-    if (hive.lastInspectionDate == null ||
-        today.difference(hive.lastInspectionDate!).inDays >= 7) {
+    if (latestInspection == null ||
+        today.difference(latestInspection.date).inDays >= 7) {
       warnings.add('Kontrolle faellig');
     }
 

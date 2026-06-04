@@ -85,6 +85,7 @@ class _HiveCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final beeStand = DemoData.beeStandById(hive.beeStandId);
+    final latestInspection = DemoData.latestInspectionForHive(hive.id);
     final warnings = DemoData.warningsForHive(hive.id);
 
     return Card(
@@ -134,7 +135,7 @@ class _HiveCard extends StatelessWidget {
                   ),
                   _InfoChip(
                     icon: Icons.fact_check_outlined,
-                    label: formatDate(hive.lastInspectionDate),
+                    label: formatDate(latestInspection?.date),
                   ),
                 ],
               ),

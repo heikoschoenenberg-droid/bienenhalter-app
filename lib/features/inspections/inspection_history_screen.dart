@@ -13,7 +13,7 @@ class InspectionHistoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final hive = hiveId == null ? null : DemoData.hiveById(hiveId!);
     final inspections = hiveId == null
-        ? DemoData.inspections
+        ? _sortedInspections(DemoData.inspections)
         : DemoData.inspectionsForHive(hiveId!);
 
     return Scaffold(
@@ -32,7 +32,7 @@ class InspectionHistoryScreen extends StatelessWidget {
                   style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 const SizedBox(height: 8),
-                const Text('Gespeicherte Demo-Kontrollen als Verlauf.'),
+                const Text('Erfasste und vorbereitete Demo-Kontrollen.'),
               ],
             );
           }
@@ -48,6 +48,10 @@ class InspectionHistoryScreen extends StatelessWidget {
       ),
     );
   }
+
+  List<Inspection> _sortedInspections(List<Inspection> inspections) {
+    return [...inspections]..sort((a, b) => b.date.compareTo(a.date));
+  }
 }
 
 class _InspectionHistoryItem extends StatelessWidget {
@@ -57,43 +61,63 @@ class _InspectionHistoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    final hive = DemoData.hiveById(inspection.hiveId);
+    final note = inspection.notes.isEmpty ? 'Keine Notiz' : inspection.notes;
+
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Icon(Icons.fact_check_outlined),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                formatDateTime(inspection.date),
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 8),
-              Text(inspection.notes),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Icon(Icons.fact_check_outlined),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Chip(label: Text('Stimmung: ${inspection.mood}')),
-                  Chip(
-                    label: Text('Brutrahmen: ${inspection.broodFrameCount}'),
+                  Text(
+                    formatDateTime(inspection.date),
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  Chip(label: Text('Staerke: ${inspection.colonyStrength}')),
-                  Chip(
-                    label: Text(
-                      inspection.queenSeen
-                          ? 'Koenigin gesehen'
-                          : 'Koenigin nicht gesehen',
-                    ),
-                  ),
+                  const SizedBox(height: 4),
+                  Text(hive.number),
                 ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            Chip(label: Text('Stimmung: ${inspection.mood}')),
+            Chip(
+              label: Text(
+                inspection.queenSeen
+                    ? 'Koenigin gesehen'
+                    : 'Koenigin nicht gesehen',
+              ),
+            ),
+            Chip(label: Text('Staerke: ${inspection.colonyStrength}/10')),
+            Chip(
+              label: Text(
+                'Honigraeume: ${inspection.honeySuperCount}, '
+                '${inspection.honeySuperFillLevel}',
+              ),
+            ),
+            Chip(
+              label: Text(
+                inspection.varroaTreatmentDone
+                    ? 'Varroa: ${inspection.varroaTreatment}'
+                    : 'Varroa: nein',
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Text(note),
       ],
     );
   }
