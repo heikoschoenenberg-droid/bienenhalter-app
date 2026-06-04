@@ -5,6 +5,7 @@ import '../features/hives/hive_detail_screen.dart';
 import '../features/hives/hive_list_screen.dart';
 import '../features/inspections/inspection_create_screen.dart';
 import '../features/inspections/inspection_history_screen.dart';
+import '../features/tasks/task_form_screen.dart';
 import '../features/tasks/task_list_screen.dart';
 import 'app_routes.dart';
 import 'app_theme.dart';
@@ -29,7 +30,8 @@ class BienenhalterApp extends StatelessWidget {
   }
 
   Widget _buildScreen(RouteSettings settings) {
-    final hiveId = settings.arguments as String?;
+    final arguments = settings.arguments;
+    final hiveId = arguments is String ? arguments : null;
 
     return switch (settings.name) {
       AppRoutes.dashboard => const DashboardScreen(),
@@ -38,6 +40,9 @@ class BienenhalterApp extends StatelessWidget {
       AppRoutes.inspectionCreate => InspectionCreateScreen(hiveId: hiveId),
       AppRoutes.inspectionHistory => InspectionHistoryScreen(hiveId: hiveId),
       AppRoutes.tasks => const TaskListScreen(),
+      AppRoutes.taskForm => TaskFormScreen(
+        arguments: arguments is TaskFormArguments ? arguments : null,
+      ),
       _ => const DashboardScreen(),
     };
   }

@@ -4,19 +4,45 @@ import '../../app/app_routes.dart';
 import '../../core/date_format.dart';
 import '../../core/demo/demo_data.dart';
 import '../../core/models/inspection.dart';
+import '../tasks/task_form_screen.dart';
 
-class HiveDetailScreen extends StatelessWidget {
+class HiveDetailScreen extends StatefulWidget {
   const HiveDetailScreen({super.key, required this.hiveId});
 
   final String? hiveId;
 
   @override
+  State<HiveDetailScreen> createState() => _HiveDetailScreenState();
+}
+
+class _HiveDetailScreenState extends State<HiveDetailScreen> {
+  Future<void> _openTaskForm(String hiveId, {String? taskId}) async {
+    final changed = await Navigator.pushNamed(
+      context,
+      AppRoutes.taskForm,
+      arguments: TaskFormArguments(taskId: taskId, initialHiveId: hiveId),
+    );
+
+    if (changed == true && mounted) {
+      setState(() {});
+    }
+  }
+
+  void _completeTask(String taskId) {
+    DemoData.completeTask(taskId);
+    setState(() {});
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Aufgabe wurde als erledigt markiert.')),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (hiveId == null) {
+    if (widget.hiveId == null) {
       return const _MissingHiveScreen();
     }
 
-    final hive = DemoData.hiveById(hiveId!);
+    final hive = DemoData.hiveById(widget.hiveId!);
     final beeStand = DemoData.beeStandById(hive.beeStandId);
     final latestInspection = DemoData.latestInspectionForHive(hive.id);
     final openTasks = DemoData.openTasksForHive(hive.id);
@@ -33,7 +59,7 @@ class HiveDetailScreen extends StatelessWidget {
           const SizedBox(height: 20),
           _ActionGrid(
             hiveId: hive.id,
-            onCreateTask: () => Navigator.pushNamed(context, AppRoutes.tasks),
+            onCreateTask: () => _openTaskForm(hive.id),
           ),
           const SizedBox(height: 20),
           _SectionCard(
@@ -69,11 +95,17 @@ class HiveDetailScreen extends StatelessWidget {
                 for (final task in openTasks)
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.radio_button_unchecked),
+                    leading: Checkbox(
+                      value: false,
+                      onChanged: (_) => _completeTask(task.id),
+                    ),
                     title: Text(task.title),
                     subtitle: Text(
-                      '${task.categoryLabel} - faellig am ${formatDate(task.dueDate)}',
+                      '${task.categoryLabel} - faellig am '
+                      '${formatDueDate(task.dueDate, task.dueTime)}',
                     ),
+                    trailing: const Icon(Icons.edit),
+                    onTap: () => _openTaskForm(hive.id, taskId: task.id),
                   ),
             ],
           ),

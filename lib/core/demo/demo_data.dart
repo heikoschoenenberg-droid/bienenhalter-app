@@ -191,50 +191,80 @@ class DemoData {
     BeekeeperTask(
       id: 'task-1',
       title: 'Volk 2 erneut auf Schwarmzellen pruefen',
+      description: 'Nach der letzten Kontrolle zeitnah nachsehen.',
       hiveId: 'hive-2',
       category: BeekeeperTaskCategory.inspection,
       dueDate: DateTime(2026, 6, 4),
+      dueTime: DateTime(2026, 6, 4, 17, 0),
       status: BeekeeperTaskStatus.open,
+      priority: BeekeeperTaskPriority.high,
+      createdAt: DateTime(2026, 5, 25, 10, 20),
+      completedAt: null,
     ),
     BeekeeperTask(
       id: 'task-2',
       title: 'Futtervorrat bei Ableger 1 kontrollieren',
+      description: 'Ableger ist noch schwach, Reserve pruefen.',
       hiveId: 'hive-4',
       category: BeekeeperTaskCategory.feeding,
       dueDate: DateTime(2026, 6, 8),
+      dueTime: null,
       status: BeekeeperTaskStatus.open,
+      priority: BeekeeperTaskPriority.normal,
+      createdAt: DateTime(2026, 6, 1, 14, 0),
+      completedAt: null,
     ),
     BeekeeperTask(
       id: 'task-3',
       title: 'Honigraum bei Volk 1 aufsetzen',
+      description: 'Erster Honigraum wurde bei der Kontrolle empfohlen.',
       hiveId: 'hive-1',
       category: BeekeeperTaskCategory.honeySuper,
       dueDate: DateTime(2026, 5, 31),
+      dueTime: DateTime(2026, 5, 31, 18, 30),
       status: BeekeeperTaskStatus.done,
+      priority: BeekeeperTaskPriority.normal,
+      createdAt: DateTime(2026, 5, 22, 12, 0),
+      completedAt: DateTime(2026, 5, 31, 19, 15),
     ),
     BeekeeperTask(
       id: 'task-4',
       title: 'Bienenflucht bei Volk 1 pruefen',
+      description: 'Vor der Honigernte vorbereiten.',
       hiveId: 'hive-1',
       category: BeekeeperTaskCategory.beeEscape,
       dueDate: DateTime(2026, 6, 5),
+      dueTime: null,
       status: BeekeeperTaskStatus.open,
+      priority: BeekeeperTaskPriority.normal,
+      createdAt: DateTime(2026, 6, 2, 12, 10),
+      completedAt: null,
     ),
     BeekeeperTask(
       id: 'task-5',
       title: 'Varroa-Plan fuer Volk 3 vorbereiten',
+      description: 'Behandlung nach Trachtende planen.',
       hiveId: 'hive-3',
       category: BeekeeperTaskCategory.varroa,
       dueDate: DateTime(2026, 6, 10),
+      dueTime: null,
       status: BeekeeperTaskStatus.open,
+      priority: BeekeeperTaskPriority.high,
+      createdAt: DateTime(2026, 6, 1, 16, 30),
+      completedAt: null,
     ),
     BeekeeperTask(
       id: 'task-6',
       title: 'Koeniginnenzeichnung bei Ableger 1 nachtragen',
+      description: 'Farbe und Jahr im Volk nachtragen.',
       hiveId: 'hive-4',
       category: BeekeeperTaskCategory.queen,
       dueDate: DateTime(2026, 6, 12),
+      dueTime: null,
       status: BeekeeperTaskStatus.open,
+      priority: BeekeeperTaskPriority.low,
+      createdAt: DateTime(2026, 6, 2, 9, 0),
+      completedAt: null,
     ),
   ];
 
@@ -273,6 +303,33 @@ class DemoData {
 
   static List<BeekeeperTask> openTasksForHive(String hiveId) {
     return tasksForHive(hiveId).where((task) => task.isOpen).toList();
+  }
+
+  static BeekeeperTask taskById(String id) {
+    return tasks.firstWhere((task) => task.id == id);
+  }
+
+  static void addTask(BeekeeperTask task) {
+    tasks.add(task);
+  }
+
+  static void updateTask(BeekeeperTask updatedTask) {
+    final index = tasks.indexWhere((task) => task.id == updatedTask.id);
+    if (index == -1) {
+      return;
+    }
+
+    tasks[index] = updatedTask;
+  }
+
+  static void completeTask(String taskId) {
+    final task = taskById(taskId);
+    updateTask(
+      task.copyWith(
+        status: BeekeeperTaskStatus.done,
+        completedAt: DateTime.now(),
+      ),
+    );
   }
 
   static List<BeekeeperTask> sortedTasks() {

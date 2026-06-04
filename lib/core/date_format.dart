@@ -9,7 +9,19 @@ String formatDate(DateTime? date) {
 }
 
 String formatDateTime(DateTime date) {
+  return '${formatDate(date)} um ${formatTime(date)} Uhr';
+}
+
+String formatTime(DateTime date) {
   final hour = date.hour.toString().padLeft(2, '0');
   final minute = date.minute.toString().padLeft(2, '0');
-  return '${formatDate(date)} um $hour:$minute Uhr';
+  return '$hour:$minute';
+}
+
+String formatDueDate(DateTime date, DateTime? time) {
+  if (time == null) {
+    return formatDate(date);
+  }
+
+  return '${formatDate(date)} um ${formatTime(time)} Uhr';
 }

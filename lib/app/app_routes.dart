@@ -7,4 +7,5 @@ class AppRoutes {
   static const inspectionCreate = '/inspections/create';
   static const inspectionHistory = '/inspections/history';
   static const tasks = '/tasks';
+  static const taskForm = '/tasks/form';
 }
