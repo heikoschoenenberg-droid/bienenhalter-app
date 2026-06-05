@@ -7,6 +7,9 @@ import '../features/apiaries/apiary_list_screen.dart';
 import '../features/hives/hive_detail_screen.dart';
 import '../features/hives/hive_form_screen.dart';
 import '../features/hives/hive_list_screen.dart';
+import '../features/honey_book/honey_book_detail_screen.dart';
+import '../features/honey_book/honey_book_form_screen.dart';
+import '../features/honey_book/honey_book_list_screen.dart';
 import '../features/inspections/inspection_create_screen.dart';
 import '../features/inspections/inspection_detail_screen.dart';
 import '../features/inspections/inspection_history_screen.dart';
@@ -51,6 +54,13 @@ class BienenhalterApp extends StatelessWidget {
       AppRoutes.hiveDetail => HiveDetailScreen(hiveId: hiveId),
       AppRoutes.hiveForm => HiveFormScreen(
         arguments: arguments is HiveFormArguments ? arguments : null,
+      ),
+      AppRoutes.honeyBook => const HoneyBookListScreen(),
+      AppRoutes.honeyBookDetail => HoneyBookDetailScreen(
+        entryId: arguments is String ? arguments : null,
+      ),
+      AppRoutes.honeyBookForm => HoneyBookFormScreen(
+        arguments: arguments is HoneyBookFormArguments ? arguments : null,
       ),
       AppRoutes.inspectionCreate => InspectionCreateScreen(
         arguments: arguments is InspectionFormArguments

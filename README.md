@@ -18,8 +18,9 @@ samples, guidance on mobile development, and a full API reference.
 
 ## Geplantes Modul: Honigbuch
 
-Spaeter soll die App ein Honigbuch pflegen und als Excel-Datei exportieren
-koennen. In dieser Phase ist noch kein Honigbuch-Modul umgesetzt.
+Die App enthaelt ein erstes Honigbuch-Grundmodul fuer Ernte- und
+Chargendaten. Spaeter soll daraus ein Excel-Export im Format eines
+klassischen Honigbuchs erzeugt werden.
 
 Vorgemerkte Felder:
 
@@ -35,4 +36,20 @@ Vorgemerkte Felder:
 - Losnummer
 - deklariertes Haltbarkeitsdatum
 - Verarbeitung: cremig oder fluessig
+- Bemerkungen
+
+TODO Excel-Exportspalten:
+
+- lfd. Nr.
+- Schleuderdatum
+- Schleuderort
+- Honigsorte
+- Wassergehalt in %
+- Menge in kg
+- abgefuellt am
+- Gewaehrstreifen Nr. von
+- Gewaehrstreifen Nr. bis
+- Losnummer
+- deklariertes Haltbarkeitsdatum
+- Verarbeitung: cremig/fluessig
 - Bemerkungen

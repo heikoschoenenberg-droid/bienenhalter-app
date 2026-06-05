@@ -132,6 +132,12 @@ class _DashboardScreenState extends State<DashboardScreen>
                 icon: const Icon(Icons.photo_library_outlined),
                 label: const Text('Stockkarten auswerten'),
               ),
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: () => _openAndReload(AppRoutes.honeyBook),
+                icon: const Icon(Icons.inventory_2_outlined),
+                label: const Text('Honigbuch'),
+              ),
             ],
           );
         },

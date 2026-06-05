@@ -8,6 +8,9 @@ class AppRoutes {
   static const hives = '/hives';
   static const hiveDetail = '/hives/detail';
   static const hiveForm = '/hives/form';
+  static const honeyBook = '/honey-book';
+  static const honeyBookDetail = '/honey-book/detail';
+  static const honeyBookForm = '/honey-book/form';
   static const inspectionCreate = '/inspections/create';
   static const inspectionDetail = '/inspections/detail';
   static const inspectionHistory = '/inspections/history';

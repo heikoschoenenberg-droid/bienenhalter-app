@@ -6,6 +6,7 @@ import '../demo/demo_data.dart';
 import '../models/bee_stand.dart';
 import '../models/beekeeper_task.dart';
 import '../models/hive.dart';
+import '../models/honey_book_entry.dart';
 import '../models/inspection.dart';
 import '../models/photo_attachment.dart';
 import 'app_data_events.dart';
@@ -14,6 +15,7 @@ class AppRepositories {
   AppRepositories._()
     : apiaries = WebApiaryRepository._(_WebJsonStore.instance),
       hives = WebHiveRepository._(_WebJsonStore.instance),
+      honeyBook = WebHoneyBookRepository._(_WebJsonStore.instance),
       inspections = WebInspectionRepository._(_WebJsonStore.instance),
       photos = WebPhotoAttachmentRepository._(_WebJsonStore.instance),
       tasks = WebTaskRepository._(_WebJsonStore.instance);
@@ -22,6 +24,7 @@ class AppRepositories {
 
   final WebApiaryRepository apiaries;
   final WebHiveRepository hives;
+  final WebHoneyBookRepository honeyBook;
   final WebInspectionRepository inspections;
   final WebPhotoAttachmentRepository photos;
   final WebTaskRepository tasks;
@@ -302,6 +305,48 @@ class WebPhotoAttachmentRepository {
   }
 }
 
+class WebHoneyBookRepository {
+  const WebHoneyBookRepository._(this._store);
+
+  final _WebJsonStore _store;
+
+  Future<List<HoneyBookEntry>> listHoneyBookEntries() async {
+    return [..._store.honeyBookEntries]
+      ..sort((a, b) => b.harvestDate.compareTo(a.harvestDate));
+  }
+
+  Future<HoneyBookEntry> getHoneyBookEntryById(String id) async {
+    return _store.honeyBookEntries.firstWhere((entry) => entry.id == id);
+  }
+
+  Future<void> createHoneyBookEntry(HoneyBookEntry entry) {
+    return upsert(entry);
+  }
+
+  Future<void> updateHoneyBookEntry(HoneyBookEntry entry) {
+    return upsert(entry);
+  }
+
+  Future<void> upsert(HoneyBookEntry entry) async {
+    final index = _store.honeyBookEntries.indexWhere(
+      (item) => item.id == entry.id,
+    );
+    if (index == -1) {
+      _store.honeyBookEntries.add(entry);
+    } else {
+      _store.honeyBookEntries[index] = entry;
+    }
+    _store.save();
+    AppDataEvents.notifyChanged();
+  }
+
+  Future<void> deleteHoneyBookEntry(String id) async {
+    _store.honeyBookEntries.removeWhere((entry) => entry.id == id);
+    _store.save();
+    AppDataEvents.notifyChanged();
+  }
+}
+
 class _WebJsonStore {
   _WebJsonStore._();
 
@@ -312,6 +357,7 @@ class _WebJsonStore {
   final List<Hive> hives = [];
   final List<Inspection> inspections = [];
   final List<PhotoAttachment> photos = [];
+  final List<HoneyBookEntry> honeyBookEntries = [];
   final List<BeekeeperTask> tasks = [];
 
   bool _loaded = false;
@@ -358,6 +404,13 @@ class _WebJsonStore {
           (item) => _photoAttachmentFromJson(item as Map<String, dynamic>),
         ),
       );
+    honeyBookEntries
+      ..clear()
+      ..addAll(
+        ((data['honeyBookEntries'] as List<dynamic>?) ?? const []).map(
+          (item) => _honeyBookEntryFromJson(item as Map<String, dynamic>),
+        ),
+      );
     tasks
       ..clear()
       ..addAll(
@@ -374,6 +427,7 @@ class _WebJsonStore {
       'hives': hives.map(_hiveToJson).toList(),
       'inspections': inspections.map(_inspectionToJson).toList(),
       'photos': photos.map(_photoAttachmentToJson).toList(),
+      'honeyBookEntries': honeyBookEntries.map(_honeyBookEntryToJson).toList(),
       'tasks': tasks.map(_taskToJson).toList(),
     };
     web.window.localStorage.setItem(_storageKey, jsonEncode(data));
@@ -390,6 +444,7 @@ class _WebJsonStore {
       ..clear()
       ..addAll(DemoData.inspections);
     photos.clear();
+    honeyBookEntries.clear();
     tasks
       ..clear()
       ..addAll(DemoData.tasks);
@@ -549,6 +604,57 @@ class _WebJsonStore {
       ),
       createdAt: DateTime.parse(json['createdAt'] as String),
       notes: json['notes'] as String? ?? '',
+    );
+  }
+
+  Map<String, dynamic> _honeyBookEntryToJson(HoneyBookEntry entry) {
+    return {
+      'id': entry.id,
+      'runningNumber': entry.runningNumber,
+      'harvestDate': entry.harvestDate.toIso8601String(),
+      'extractionLocation': entry.extractionLocation,
+      'honeyType': entry.honeyType,
+      'waterContentPercent': entry.waterContentPercent,
+      'amountKg': entry.amountKg,
+      'bottledAt': entry.bottledAt?.toIso8601String(),
+      'labelNumberFrom': entry.labelNumberFrom,
+      'labelNumberTo': entry.labelNumberTo,
+      'batchNumber': entry.batchNumber,
+      'bestBeforeDate': entry.bestBeforeDate?.toIso8601String(),
+      'processingType': entry.processingType.name,
+      'notes': entry.notes,
+      'originNote': entry.originNote,
+      'createdAt': entry.createdAt.toIso8601String(),
+      'updatedAt': entry.updatedAt.toIso8601String(),
+    };
+  }
+
+  HoneyBookEntry _honeyBookEntryFromJson(Map<String, dynamic> json) {
+    return HoneyBookEntry(
+      id: json['id'] as String,
+      runningNumber: json['runningNumber'] as String? ?? '',
+      harvestDate: DateTime.parse(json['harvestDate'] as String),
+      extractionLocation: json['extractionLocation'] as String? ?? '',
+      honeyType: json['honeyType'] as String,
+      waterContentPercent: (json['waterContentPercent'] as num?)?.toDouble(),
+      amountKg: (json['amountKg'] as num).toDouble(),
+      bottledAt: json['bottledAt'] == null
+          ? null
+          : DateTime.parse(json['bottledAt'] as String),
+      labelNumberFrom: json['labelNumberFrom'] as String? ?? '',
+      labelNumberTo: json['labelNumberTo'] as String? ?? '',
+      batchNumber: json['batchNumber'] as String? ?? '',
+      bestBeforeDate: json['bestBeforeDate'] == null
+          ? null
+          : DateTime.parse(json['bestBeforeDate'] as String),
+      processingType: HoneyProcessingType.values.firstWhere(
+        (type) => type.name == json['processingType'],
+        orElse: () => HoneyProcessingType.liquid,
+      ),
+      notes: json['notes'] as String? ?? '',
+      originNote: json['originNote'] as String? ?? '',
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      updatedAt: DateTime.parse(json['updatedAt'] as String),
     );
   }
 

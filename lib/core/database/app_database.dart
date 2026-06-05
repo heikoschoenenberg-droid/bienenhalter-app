@@ -118,6 +118,29 @@ class PhotoAttachments extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+class HoneyBookEntries extends Table {
+  TextColumn get id => text()();
+  TextColumn get runningNumber => text()();
+  DateTimeColumn get harvestDate => dateTime()();
+  TextColumn get extractionLocation => text()();
+  TextColumn get honeyType => text()();
+  RealColumn get waterContentPercent => real().nullable()();
+  RealColumn get amountKg => real()();
+  DateTimeColumn get bottledAt => dateTime().nullable()();
+  TextColumn get labelNumberFrom => text().withDefault(const Constant(''))();
+  TextColumn get labelNumberTo => text().withDefault(const Constant(''))();
+  TextColumn get batchNumber => text().withDefault(const Constant(''))();
+  DateTimeColumn get bestBeforeDate => dateTime().nullable()();
+  TextColumn get processingType => text()();
+  TextColumn get notes => text().withDefault(const Constant(''))();
+  TextColumn get originNote => text().withDefault(const Constant(''))();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 @DriftDatabase(
   tables: [
     Apiaries,
@@ -126,6 +149,7 @@ class PhotoAttachments extends Table {
     Tasks,
     InspectionPhotos,
     PhotoAttachments,
+    HoneyBookEntries,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -134,7 +158,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forExecutor(super.executor);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration {
@@ -142,6 +166,9 @@ class AppDatabase extends _$AppDatabase {
       onUpgrade: (migrator, from, to) async {
         if (from < 2) {
           await migrator.createTable(photoAttachments);
+        }
+        if (from < 3) {
+          await migrator.createTable(honeyBookEntries);
         }
       },
     );

@@ -1,6 +1,7 @@
 import '../database/app_database.dart';
 import '../repositories/apiary_repository.dart';
 import '../repositories/hive_repository.dart';
+import '../repositories/honey_book_repository.dart';
 import '../repositories/inspection_repository.dart';
 import '../repositories/photo_attachment_repository.dart';
 import '../repositories/task_repository.dart';
@@ -10,6 +11,7 @@ class AppRepositories {
   AppRepositories.withDatabase(this.database)
     : apiaries = ApiaryRepository(database),
       hives = HiveRepository(database),
+      honeyBook = HoneyBookRepository(database),
       inspections = InspectionRepository(database),
       photos = PhotoAttachmentRepository(database),
       tasks = TaskRepository(database);
@@ -21,6 +23,7 @@ class AppRepositories {
   final AppDatabase database;
   final ApiaryRepository apiaries;
   final HiveRepository hives;
+  final HoneyBookRepository honeyBook;
   final InspectionRepository inspections;
   final PhotoAttachmentRepository photos;
   final TaskRepository tasks;

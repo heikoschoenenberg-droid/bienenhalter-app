@@ -4462,6 +4462,1000 @@ class PhotoAttachmentsCompanion extends UpdateCompanion<PhotoAttachment> {
   }
 }
 
+class $HoneyBookEntriesTable extends HoneyBookEntries
+    with TableInfo<$HoneyBookEntriesTable, HoneyBookEntry> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $HoneyBookEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _runningNumberMeta = const VerificationMeta(
+    'runningNumber',
+  );
+  @override
+  late final GeneratedColumn<String> runningNumber = GeneratedColumn<String>(
+    'running_number',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _harvestDateMeta = const VerificationMeta(
+    'harvestDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> harvestDate = GeneratedColumn<DateTime>(
+    'harvest_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _extractionLocationMeta =
+      const VerificationMeta('extractionLocation');
+  @override
+  late final GeneratedColumn<String> extractionLocation =
+      GeneratedColumn<String>(
+        'extraction_location',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      );
+  static const VerificationMeta _honeyTypeMeta = const VerificationMeta(
+    'honeyType',
+  );
+  @override
+  late final GeneratedColumn<String> honeyType = GeneratedColumn<String>(
+    'honey_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _waterContentPercentMeta =
+      const VerificationMeta('waterContentPercent');
+  @override
+  late final GeneratedColumn<double> waterContentPercent =
+      GeneratedColumn<double>(
+        'water_content_percent',
+        aliasedName,
+        true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _amountKgMeta = const VerificationMeta(
+    'amountKg',
+  );
+  @override
+  late final GeneratedColumn<double> amountKg = GeneratedColumn<double>(
+    'amount_kg',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _bottledAtMeta = const VerificationMeta(
+    'bottledAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> bottledAt = GeneratedColumn<DateTime>(
+    'bottled_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _labelNumberFromMeta = const VerificationMeta(
+    'labelNumberFrom',
+  );
+  @override
+  late final GeneratedColumn<String> labelNumberFrom = GeneratedColumn<String>(
+    'label_number_from',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _labelNumberToMeta = const VerificationMeta(
+    'labelNumberTo',
+  );
+  @override
+  late final GeneratedColumn<String> labelNumberTo = GeneratedColumn<String>(
+    'label_number_to',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _batchNumberMeta = const VerificationMeta(
+    'batchNumber',
+  );
+  @override
+  late final GeneratedColumn<String> batchNumber = GeneratedColumn<String>(
+    'batch_number',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _bestBeforeDateMeta = const VerificationMeta(
+    'bestBeforeDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> bestBeforeDate =
+      GeneratedColumn<DateTime>(
+        'best_before_date',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _processingTypeMeta = const VerificationMeta(
+    'processingType',
+  );
+  @override
+  late final GeneratedColumn<String> processingType = GeneratedColumn<String>(
+    'processing_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _originNoteMeta = const VerificationMeta(
+    'originNote',
+  );
+  @override
+  late final GeneratedColumn<String> originNote = GeneratedColumn<String>(
+    'origin_note',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    runningNumber,
+    harvestDate,
+    extractionLocation,
+    honeyType,
+    waterContentPercent,
+    amountKg,
+    bottledAt,
+    labelNumberFrom,
+    labelNumberTo,
+    batchNumber,
+    bestBeforeDate,
+    processingType,
+    notes,
+    originNote,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'honey_book_entries';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<HoneyBookEntry> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('running_number')) {
+      context.handle(
+        _runningNumberMeta,
+        runningNumber.isAcceptableOrUnknown(
+          data['running_number']!,
+          _runningNumberMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_runningNumberMeta);
+    }
+    if (data.containsKey('harvest_date')) {
+      context.handle(
+        _harvestDateMeta,
+        harvestDate.isAcceptableOrUnknown(
+          data['harvest_date']!,
+          _harvestDateMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_harvestDateMeta);
+    }
+    if (data.containsKey('extraction_location')) {
+      context.handle(
+        _extractionLocationMeta,
+        extractionLocation.isAcceptableOrUnknown(
+          data['extraction_location']!,
+          _extractionLocationMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_extractionLocationMeta);
+    }
+    if (data.containsKey('honey_type')) {
+      context.handle(
+        _honeyTypeMeta,
+        honeyType.isAcceptableOrUnknown(data['honey_type']!, _honeyTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_honeyTypeMeta);
+    }
+    if (data.containsKey('water_content_percent')) {
+      context.handle(
+        _waterContentPercentMeta,
+        waterContentPercent.isAcceptableOrUnknown(
+          data['water_content_percent']!,
+          _waterContentPercentMeta,
+        ),
+      );
+    }
+    if (data.containsKey('amount_kg')) {
+      context.handle(
+        _amountKgMeta,
+        amountKg.isAcceptableOrUnknown(data['amount_kg']!, _amountKgMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_amountKgMeta);
+    }
+    if (data.containsKey('bottled_at')) {
+      context.handle(
+        _bottledAtMeta,
+        bottledAt.isAcceptableOrUnknown(data['bottled_at']!, _bottledAtMeta),
+      );
+    }
+    if (data.containsKey('label_number_from')) {
+      context.handle(
+        _labelNumberFromMeta,
+        labelNumberFrom.isAcceptableOrUnknown(
+          data['label_number_from']!,
+          _labelNumberFromMeta,
+        ),
+      );
+    }
+    if (data.containsKey('label_number_to')) {
+      context.handle(
+        _labelNumberToMeta,
+        labelNumberTo.isAcceptableOrUnknown(
+          data['label_number_to']!,
+          _labelNumberToMeta,
+        ),
+      );
+    }
+    if (data.containsKey('batch_number')) {
+      context.handle(
+        _batchNumberMeta,
+        batchNumber.isAcceptableOrUnknown(
+          data['batch_number']!,
+          _batchNumberMeta,
+        ),
+      );
+    }
+    if (data.containsKey('best_before_date')) {
+      context.handle(
+        _bestBeforeDateMeta,
+        bestBeforeDate.isAcceptableOrUnknown(
+          data['best_before_date']!,
+          _bestBeforeDateMeta,
+        ),
+      );
+    }
+    if (data.containsKey('processing_type')) {
+      context.handle(
+        _processingTypeMeta,
+        processingType.isAcceptableOrUnknown(
+          data['processing_type']!,
+          _processingTypeMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_processingTypeMeta);
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    if (data.containsKey('origin_note')) {
+      context.handle(
+        _originNoteMeta,
+        originNote.isAcceptableOrUnknown(data['origin_note']!, _originNoteMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  HoneyBookEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return HoneyBookEntry(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      runningNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}running_number'],
+      )!,
+      harvestDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}harvest_date'],
+      )!,
+      extractionLocation: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}extraction_location'],
+      )!,
+      honeyType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}honey_type'],
+      )!,
+      waterContentPercent: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}water_content_percent'],
+      ),
+      amountKg: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}amount_kg'],
+      )!,
+      bottledAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}bottled_at'],
+      ),
+      labelNumberFrom: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label_number_from'],
+      )!,
+      labelNumberTo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label_number_to'],
+      )!,
+      batchNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}batch_number'],
+      )!,
+      bestBeforeDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}best_before_date'],
+      ),
+      processingType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}processing_type'],
+      )!,
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      )!,
+      originNote: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin_note'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $HoneyBookEntriesTable createAlias(String alias) {
+    return $HoneyBookEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class HoneyBookEntry extends DataClass implements Insertable<HoneyBookEntry> {
+  final String id;
+  final String runningNumber;
+  final DateTime harvestDate;
+  final String extractionLocation;
+  final String honeyType;
+  final double? waterContentPercent;
+  final double amountKg;
+  final DateTime? bottledAt;
+  final String labelNumberFrom;
+  final String labelNumberTo;
+  final String batchNumber;
+  final DateTime? bestBeforeDate;
+  final String processingType;
+  final String notes;
+  final String originNote;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  const HoneyBookEntry({
+    required this.id,
+    required this.runningNumber,
+    required this.harvestDate,
+    required this.extractionLocation,
+    required this.honeyType,
+    this.waterContentPercent,
+    required this.amountKg,
+    this.bottledAt,
+    required this.labelNumberFrom,
+    required this.labelNumberTo,
+    required this.batchNumber,
+    this.bestBeforeDate,
+    required this.processingType,
+    required this.notes,
+    required this.originNote,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['running_number'] = Variable<String>(runningNumber);
+    map['harvest_date'] = Variable<DateTime>(harvestDate);
+    map['extraction_location'] = Variable<String>(extractionLocation);
+    map['honey_type'] = Variable<String>(honeyType);
+    if (!nullToAbsent || waterContentPercent != null) {
+      map['water_content_percent'] = Variable<double>(waterContentPercent);
+    }
+    map['amount_kg'] = Variable<double>(amountKg);
+    if (!nullToAbsent || bottledAt != null) {
+      map['bottled_at'] = Variable<DateTime>(bottledAt);
+    }
+    map['label_number_from'] = Variable<String>(labelNumberFrom);
+    map['label_number_to'] = Variable<String>(labelNumberTo);
+    map['batch_number'] = Variable<String>(batchNumber);
+    if (!nullToAbsent || bestBeforeDate != null) {
+      map['best_before_date'] = Variable<DateTime>(bestBeforeDate);
+    }
+    map['processing_type'] = Variable<String>(processingType);
+    map['notes'] = Variable<String>(notes);
+    map['origin_note'] = Variable<String>(originNote);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  HoneyBookEntriesCompanion toCompanion(bool nullToAbsent) {
+    return HoneyBookEntriesCompanion(
+      id: Value(id),
+      runningNumber: Value(runningNumber),
+      harvestDate: Value(harvestDate),
+      extractionLocation: Value(extractionLocation),
+      honeyType: Value(honeyType),
+      waterContentPercent: waterContentPercent == null && nullToAbsent
+          ? const Value.absent()
+          : Value(waterContentPercent),
+      amountKg: Value(amountKg),
+      bottledAt: bottledAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(bottledAt),
+      labelNumberFrom: Value(labelNumberFrom),
+      labelNumberTo: Value(labelNumberTo),
+      batchNumber: Value(batchNumber),
+      bestBeforeDate: bestBeforeDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(bestBeforeDate),
+      processingType: Value(processingType),
+      notes: Value(notes),
+      originNote: Value(originNote),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory HoneyBookEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return HoneyBookEntry(
+      id: serializer.fromJson<String>(json['id']),
+      runningNumber: serializer.fromJson<String>(json['runningNumber']),
+      harvestDate: serializer.fromJson<DateTime>(json['harvestDate']),
+      extractionLocation: serializer.fromJson<String>(
+        json['extractionLocation'],
+      ),
+      honeyType: serializer.fromJson<String>(json['honeyType']),
+      waterContentPercent: serializer.fromJson<double?>(
+        json['waterContentPercent'],
+      ),
+      amountKg: serializer.fromJson<double>(json['amountKg']),
+      bottledAt: serializer.fromJson<DateTime?>(json['bottledAt']),
+      labelNumberFrom: serializer.fromJson<String>(json['labelNumberFrom']),
+      labelNumberTo: serializer.fromJson<String>(json['labelNumberTo']),
+      batchNumber: serializer.fromJson<String>(json['batchNumber']),
+      bestBeforeDate: serializer.fromJson<DateTime?>(json['bestBeforeDate']),
+      processingType: serializer.fromJson<String>(json['processingType']),
+      notes: serializer.fromJson<String>(json['notes']),
+      originNote: serializer.fromJson<String>(json['originNote']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'runningNumber': serializer.toJson<String>(runningNumber),
+      'harvestDate': serializer.toJson<DateTime>(harvestDate),
+      'extractionLocation': serializer.toJson<String>(extractionLocation),
+      'honeyType': serializer.toJson<String>(honeyType),
+      'waterContentPercent': serializer.toJson<double?>(waterContentPercent),
+      'amountKg': serializer.toJson<double>(amountKg),
+      'bottledAt': serializer.toJson<DateTime?>(bottledAt),
+      'labelNumberFrom': serializer.toJson<String>(labelNumberFrom),
+      'labelNumberTo': serializer.toJson<String>(labelNumberTo),
+      'batchNumber': serializer.toJson<String>(batchNumber),
+      'bestBeforeDate': serializer.toJson<DateTime?>(bestBeforeDate),
+      'processingType': serializer.toJson<String>(processingType),
+      'notes': serializer.toJson<String>(notes),
+      'originNote': serializer.toJson<String>(originNote),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  HoneyBookEntry copyWith({
+    String? id,
+    String? runningNumber,
+    DateTime? harvestDate,
+    String? extractionLocation,
+    String? honeyType,
+    Value<double?> waterContentPercent = const Value.absent(),
+    double? amountKg,
+    Value<DateTime?> bottledAt = const Value.absent(),
+    String? labelNumberFrom,
+    String? labelNumberTo,
+    String? batchNumber,
+    Value<DateTime?> bestBeforeDate = const Value.absent(),
+    String? processingType,
+    String? notes,
+    String? originNote,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) => HoneyBookEntry(
+    id: id ?? this.id,
+    runningNumber: runningNumber ?? this.runningNumber,
+    harvestDate: harvestDate ?? this.harvestDate,
+    extractionLocation: extractionLocation ?? this.extractionLocation,
+    honeyType: honeyType ?? this.honeyType,
+    waterContentPercent: waterContentPercent.present
+        ? waterContentPercent.value
+        : this.waterContentPercent,
+    amountKg: amountKg ?? this.amountKg,
+    bottledAt: bottledAt.present ? bottledAt.value : this.bottledAt,
+    labelNumberFrom: labelNumberFrom ?? this.labelNumberFrom,
+    labelNumberTo: labelNumberTo ?? this.labelNumberTo,
+    batchNumber: batchNumber ?? this.batchNumber,
+    bestBeforeDate: bestBeforeDate.present
+        ? bestBeforeDate.value
+        : this.bestBeforeDate,
+    processingType: processingType ?? this.processingType,
+    notes: notes ?? this.notes,
+    originNote: originNote ?? this.originNote,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  HoneyBookEntry copyWithCompanion(HoneyBookEntriesCompanion data) {
+    return HoneyBookEntry(
+      id: data.id.present ? data.id.value : this.id,
+      runningNumber: data.runningNumber.present
+          ? data.runningNumber.value
+          : this.runningNumber,
+      harvestDate: data.harvestDate.present
+          ? data.harvestDate.value
+          : this.harvestDate,
+      extractionLocation: data.extractionLocation.present
+          ? data.extractionLocation.value
+          : this.extractionLocation,
+      honeyType: data.honeyType.present ? data.honeyType.value : this.honeyType,
+      waterContentPercent: data.waterContentPercent.present
+          ? data.waterContentPercent.value
+          : this.waterContentPercent,
+      amountKg: data.amountKg.present ? data.amountKg.value : this.amountKg,
+      bottledAt: data.bottledAt.present ? data.bottledAt.value : this.bottledAt,
+      labelNumberFrom: data.labelNumberFrom.present
+          ? data.labelNumberFrom.value
+          : this.labelNumberFrom,
+      labelNumberTo: data.labelNumberTo.present
+          ? data.labelNumberTo.value
+          : this.labelNumberTo,
+      batchNumber: data.batchNumber.present
+          ? data.batchNumber.value
+          : this.batchNumber,
+      bestBeforeDate: data.bestBeforeDate.present
+          ? data.bestBeforeDate.value
+          : this.bestBeforeDate,
+      processingType: data.processingType.present
+          ? data.processingType.value
+          : this.processingType,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      originNote: data.originNote.present
+          ? data.originNote.value
+          : this.originNote,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HoneyBookEntry(')
+          ..write('id: $id, ')
+          ..write('runningNumber: $runningNumber, ')
+          ..write('harvestDate: $harvestDate, ')
+          ..write('extractionLocation: $extractionLocation, ')
+          ..write('honeyType: $honeyType, ')
+          ..write('waterContentPercent: $waterContentPercent, ')
+          ..write('amountKg: $amountKg, ')
+          ..write('bottledAt: $bottledAt, ')
+          ..write('labelNumberFrom: $labelNumberFrom, ')
+          ..write('labelNumberTo: $labelNumberTo, ')
+          ..write('batchNumber: $batchNumber, ')
+          ..write('bestBeforeDate: $bestBeforeDate, ')
+          ..write('processingType: $processingType, ')
+          ..write('notes: $notes, ')
+          ..write('originNote: $originNote, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    runningNumber,
+    harvestDate,
+    extractionLocation,
+    honeyType,
+    waterContentPercent,
+    amountKg,
+    bottledAt,
+    labelNumberFrom,
+    labelNumberTo,
+    batchNumber,
+    bestBeforeDate,
+    processingType,
+    notes,
+    originNote,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is HoneyBookEntry &&
+          other.id == this.id &&
+          other.runningNumber == this.runningNumber &&
+          other.harvestDate == this.harvestDate &&
+          other.extractionLocation == this.extractionLocation &&
+          other.honeyType == this.honeyType &&
+          other.waterContentPercent == this.waterContentPercent &&
+          other.amountKg == this.amountKg &&
+          other.bottledAt == this.bottledAt &&
+          other.labelNumberFrom == this.labelNumberFrom &&
+          other.labelNumberTo == this.labelNumberTo &&
+          other.batchNumber == this.batchNumber &&
+          other.bestBeforeDate == this.bestBeforeDate &&
+          other.processingType == this.processingType &&
+          other.notes == this.notes &&
+          other.originNote == this.originNote &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class HoneyBookEntriesCompanion extends UpdateCompanion<HoneyBookEntry> {
+  final Value<String> id;
+  final Value<String> runningNumber;
+  final Value<DateTime> harvestDate;
+  final Value<String> extractionLocation;
+  final Value<String> honeyType;
+  final Value<double?> waterContentPercent;
+  final Value<double> amountKg;
+  final Value<DateTime?> bottledAt;
+  final Value<String> labelNumberFrom;
+  final Value<String> labelNumberTo;
+  final Value<String> batchNumber;
+  final Value<DateTime?> bestBeforeDate;
+  final Value<String> processingType;
+  final Value<String> notes;
+  final Value<String> originNote;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const HoneyBookEntriesCompanion({
+    this.id = const Value.absent(),
+    this.runningNumber = const Value.absent(),
+    this.harvestDate = const Value.absent(),
+    this.extractionLocation = const Value.absent(),
+    this.honeyType = const Value.absent(),
+    this.waterContentPercent = const Value.absent(),
+    this.amountKg = const Value.absent(),
+    this.bottledAt = const Value.absent(),
+    this.labelNumberFrom = const Value.absent(),
+    this.labelNumberTo = const Value.absent(),
+    this.batchNumber = const Value.absent(),
+    this.bestBeforeDate = const Value.absent(),
+    this.processingType = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.originNote = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  HoneyBookEntriesCompanion.insert({
+    required String id,
+    required String runningNumber,
+    required DateTime harvestDate,
+    required String extractionLocation,
+    required String honeyType,
+    this.waterContentPercent = const Value.absent(),
+    required double amountKg,
+    this.bottledAt = const Value.absent(),
+    this.labelNumberFrom = const Value.absent(),
+    this.labelNumberTo = const Value.absent(),
+    this.batchNumber = const Value.absent(),
+    this.bestBeforeDate = const Value.absent(),
+    required String processingType,
+    this.notes = const Value.absent(),
+    this.originNote = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       runningNumber = Value(runningNumber),
+       harvestDate = Value(harvestDate),
+       extractionLocation = Value(extractionLocation),
+       honeyType = Value(honeyType),
+       amountKg = Value(amountKg),
+       processingType = Value(processingType),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<HoneyBookEntry> custom({
+    Expression<String>? id,
+    Expression<String>? runningNumber,
+    Expression<DateTime>? harvestDate,
+    Expression<String>? extractionLocation,
+    Expression<String>? honeyType,
+    Expression<double>? waterContentPercent,
+    Expression<double>? amountKg,
+    Expression<DateTime>? bottledAt,
+    Expression<String>? labelNumberFrom,
+    Expression<String>? labelNumberTo,
+    Expression<String>? batchNumber,
+    Expression<DateTime>? bestBeforeDate,
+    Expression<String>? processingType,
+    Expression<String>? notes,
+    Expression<String>? originNote,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (runningNumber != null) 'running_number': runningNumber,
+      if (harvestDate != null) 'harvest_date': harvestDate,
+      if (extractionLocation != null) 'extraction_location': extractionLocation,
+      if (honeyType != null) 'honey_type': honeyType,
+      if (waterContentPercent != null)
+        'water_content_percent': waterContentPercent,
+      if (amountKg != null) 'amount_kg': amountKg,
+      if (bottledAt != null) 'bottled_at': bottledAt,
+      if (labelNumberFrom != null) 'label_number_from': labelNumberFrom,
+      if (labelNumberTo != null) 'label_number_to': labelNumberTo,
+      if (batchNumber != null) 'batch_number': batchNumber,
+      if (bestBeforeDate != null) 'best_before_date': bestBeforeDate,
+      if (processingType != null) 'processing_type': processingType,
+      if (notes != null) 'notes': notes,
+      if (originNote != null) 'origin_note': originNote,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  HoneyBookEntriesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? runningNumber,
+    Value<DateTime>? harvestDate,
+    Value<String>? extractionLocation,
+    Value<String>? honeyType,
+    Value<double?>? waterContentPercent,
+    Value<double>? amountKg,
+    Value<DateTime?>? bottledAt,
+    Value<String>? labelNumberFrom,
+    Value<String>? labelNumberTo,
+    Value<String>? batchNumber,
+    Value<DateTime?>? bestBeforeDate,
+    Value<String>? processingType,
+    Value<String>? notes,
+    Value<String>? originNote,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return HoneyBookEntriesCompanion(
+      id: id ?? this.id,
+      runningNumber: runningNumber ?? this.runningNumber,
+      harvestDate: harvestDate ?? this.harvestDate,
+      extractionLocation: extractionLocation ?? this.extractionLocation,
+      honeyType: honeyType ?? this.honeyType,
+      waterContentPercent: waterContentPercent ?? this.waterContentPercent,
+      amountKg: amountKg ?? this.amountKg,
+      bottledAt: bottledAt ?? this.bottledAt,
+      labelNumberFrom: labelNumberFrom ?? this.labelNumberFrom,
+      labelNumberTo: labelNumberTo ?? this.labelNumberTo,
+      batchNumber: batchNumber ?? this.batchNumber,
+      bestBeforeDate: bestBeforeDate ?? this.bestBeforeDate,
+      processingType: processingType ?? this.processingType,
+      notes: notes ?? this.notes,
+      originNote: originNote ?? this.originNote,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (runningNumber.present) {
+      map['running_number'] = Variable<String>(runningNumber.value);
+    }
+    if (harvestDate.present) {
+      map['harvest_date'] = Variable<DateTime>(harvestDate.value);
+    }
+    if (extractionLocation.present) {
+      map['extraction_location'] = Variable<String>(extractionLocation.value);
+    }
+    if (honeyType.present) {
+      map['honey_type'] = Variable<String>(honeyType.value);
+    }
+    if (waterContentPercent.present) {
+      map['water_content_percent'] = Variable<double>(
+        waterContentPercent.value,
+      );
+    }
+    if (amountKg.present) {
+      map['amount_kg'] = Variable<double>(amountKg.value);
+    }
+    if (bottledAt.present) {
+      map['bottled_at'] = Variable<DateTime>(bottledAt.value);
+    }
+    if (labelNumberFrom.present) {
+      map['label_number_from'] = Variable<String>(labelNumberFrom.value);
+    }
+    if (labelNumberTo.present) {
+      map['label_number_to'] = Variable<String>(labelNumberTo.value);
+    }
+    if (batchNumber.present) {
+      map['batch_number'] = Variable<String>(batchNumber.value);
+    }
+    if (bestBeforeDate.present) {
+      map['best_before_date'] = Variable<DateTime>(bestBeforeDate.value);
+    }
+    if (processingType.present) {
+      map['processing_type'] = Variable<String>(processingType.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (originNote.present) {
+      map['origin_note'] = Variable<String>(originNote.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HoneyBookEntriesCompanion(')
+          ..write('id: $id, ')
+          ..write('runningNumber: $runningNumber, ')
+          ..write('harvestDate: $harvestDate, ')
+          ..write('extractionLocation: $extractionLocation, ')
+          ..write('honeyType: $honeyType, ')
+          ..write('waterContentPercent: $waterContentPercent, ')
+          ..write('amountKg: $amountKg, ')
+          ..write('bottledAt: $bottledAt, ')
+          ..write('labelNumberFrom: $labelNumberFrom, ')
+          ..write('labelNumberTo: $labelNumberTo, ')
+          ..write('batchNumber: $batchNumber, ')
+          ..write('bestBeforeDate: $bestBeforeDate, ')
+          ..write('processingType: $processingType, ')
+          ..write('notes: $notes, ')
+          ..write('originNote: $originNote, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -4475,6 +5469,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $PhotoAttachmentsTable photoAttachments = $PhotoAttachmentsTable(
     this,
   );
+  late final $HoneyBookEntriesTable honeyBookEntries = $HoneyBookEntriesTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -4486,6 +5483,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     tasks,
     inspectionPhotos,
     photoAttachments,
+    honeyBookEntries,
   ];
 }
 
@@ -7433,6 +8431,460 @@ typedef $$PhotoAttachmentsTableProcessedTableManager =
       PhotoAttachment,
       PrefetchHooks Function()
     >;
+typedef $$HoneyBookEntriesTableCreateCompanionBuilder =
+    HoneyBookEntriesCompanion Function({
+      required String id,
+      required String runningNumber,
+      required DateTime harvestDate,
+      required String extractionLocation,
+      required String honeyType,
+      Value<double?> waterContentPercent,
+      required double amountKg,
+      Value<DateTime?> bottledAt,
+      Value<String> labelNumberFrom,
+      Value<String> labelNumberTo,
+      Value<String> batchNumber,
+      Value<DateTime?> bestBeforeDate,
+      required String processingType,
+      Value<String> notes,
+      Value<String> originNote,
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$HoneyBookEntriesTableUpdateCompanionBuilder =
+    HoneyBookEntriesCompanion Function({
+      Value<String> id,
+      Value<String> runningNumber,
+      Value<DateTime> harvestDate,
+      Value<String> extractionLocation,
+      Value<String> honeyType,
+      Value<double?> waterContentPercent,
+      Value<double> amountKg,
+      Value<DateTime?> bottledAt,
+      Value<String> labelNumberFrom,
+      Value<String> labelNumberTo,
+      Value<String> batchNumber,
+      Value<DateTime?> bestBeforeDate,
+      Value<String> processingType,
+      Value<String> notes,
+      Value<String> originNote,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$HoneyBookEntriesTableFilterComposer
+    extends Composer<_$AppDatabase, $HoneyBookEntriesTable> {
+  $$HoneyBookEntriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get runningNumber => $composableBuilder(
+    column: $table.runningNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get harvestDate => $composableBuilder(
+    column: $table.harvestDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get extractionLocation => $composableBuilder(
+    column: $table.extractionLocation,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get honeyType => $composableBuilder(
+    column: $table.honeyType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get waterContentPercent => $composableBuilder(
+    column: $table.waterContentPercent,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get amountKg => $composableBuilder(
+    column: $table.amountKg,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get bottledAt => $composableBuilder(
+    column: $table.bottledAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get labelNumberFrom => $composableBuilder(
+    column: $table.labelNumberFrom,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get labelNumberTo => $composableBuilder(
+    column: $table.labelNumberTo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get batchNumber => $composableBuilder(
+    column: $table.batchNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get bestBeforeDate => $composableBuilder(
+    column: $table.bestBeforeDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get processingType => $composableBuilder(
+    column: $table.processingType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get originNote => $composableBuilder(
+    column: $table.originNote,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$HoneyBookEntriesTableOrderingComposer
+    extends Composer<_$AppDatabase, $HoneyBookEntriesTable> {
+  $$HoneyBookEntriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get runningNumber => $composableBuilder(
+    column: $table.runningNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get harvestDate => $composableBuilder(
+    column: $table.harvestDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get extractionLocation => $composableBuilder(
+    column: $table.extractionLocation,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get honeyType => $composableBuilder(
+    column: $table.honeyType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get waterContentPercent => $composableBuilder(
+    column: $table.waterContentPercent,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get amountKg => $composableBuilder(
+    column: $table.amountKg,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get bottledAt => $composableBuilder(
+    column: $table.bottledAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get labelNumberFrom => $composableBuilder(
+    column: $table.labelNumberFrom,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get labelNumberTo => $composableBuilder(
+    column: $table.labelNumberTo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get batchNumber => $composableBuilder(
+    column: $table.batchNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get bestBeforeDate => $composableBuilder(
+    column: $table.bestBeforeDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get processingType => $composableBuilder(
+    column: $table.processingType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get originNote => $composableBuilder(
+    column: $table.originNote,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$HoneyBookEntriesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $HoneyBookEntriesTable> {
+  $$HoneyBookEntriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get runningNumber => $composableBuilder(
+    column: $table.runningNumber,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get harvestDate => $composableBuilder(
+    column: $table.harvestDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get extractionLocation => $composableBuilder(
+    column: $table.extractionLocation,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get honeyType =>
+      $composableBuilder(column: $table.honeyType, builder: (column) => column);
+
+  GeneratedColumn<double> get waterContentPercent => $composableBuilder(
+    column: $table.waterContentPercent,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get amountKg =>
+      $composableBuilder(column: $table.amountKg, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get bottledAt =>
+      $composableBuilder(column: $table.bottledAt, builder: (column) => column);
+
+  GeneratedColumn<String> get labelNumberFrom => $composableBuilder(
+    column: $table.labelNumberFrom,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get labelNumberTo => $composableBuilder(
+    column: $table.labelNumberTo,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get batchNumber => $composableBuilder(
+    column: $table.batchNumber,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get bestBeforeDate => $composableBuilder(
+    column: $table.bestBeforeDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get processingType => $composableBuilder(
+    column: $table.processingType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<String> get originNote => $composableBuilder(
+    column: $table.originNote,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$HoneyBookEntriesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $HoneyBookEntriesTable,
+          HoneyBookEntry,
+          $$HoneyBookEntriesTableFilterComposer,
+          $$HoneyBookEntriesTableOrderingComposer,
+          $$HoneyBookEntriesTableAnnotationComposer,
+          $$HoneyBookEntriesTableCreateCompanionBuilder,
+          $$HoneyBookEntriesTableUpdateCompanionBuilder,
+          (
+            HoneyBookEntry,
+            BaseReferences<
+              _$AppDatabase,
+              $HoneyBookEntriesTable,
+              HoneyBookEntry
+            >,
+          ),
+          HoneyBookEntry,
+          PrefetchHooks Function()
+        > {
+  $$HoneyBookEntriesTableTableManager(
+    _$AppDatabase db,
+    $HoneyBookEntriesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$HoneyBookEntriesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$HoneyBookEntriesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$HoneyBookEntriesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> runningNumber = const Value.absent(),
+                Value<DateTime> harvestDate = const Value.absent(),
+                Value<String> extractionLocation = const Value.absent(),
+                Value<String> honeyType = const Value.absent(),
+                Value<double?> waterContentPercent = const Value.absent(),
+                Value<double> amountKg = const Value.absent(),
+                Value<DateTime?> bottledAt = const Value.absent(),
+                Value<String> labelNumberFrom = const Value.absent(),
+                Value<String> labelNumberTo = const Value.absent(),
+                Value<String> batchNumber = const Value.absent(),
+                Value<DateTime?> bestBeforeDate = const Value.absent(),
+                Value<String> processingType = const Value.absent(),
+                Value<String> notes = const Value.absent(),
+                Value<String> originNote = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => HoneyBookEntriesCompanion(
+                id: id,
+                runningNumber: runningNumber,
+                harvestDate: harvestDate,
+                extractionLocation: extractionLocation,
+                honeyType: honeyType,
+                waterContentPercent: waterContentPercent,
+                amountKg: amountKg,
+                bottledAt: bottledAt,
+                labelNumberFrom: labelNumberFrom,
+                labelNumberTo: labelNumberTo,
+                batchNumber: batchNumber,
+                bestBeforeDate: bestBeforeDate,
+                processingType: processingType,
+                notes: notes,
+                originNote: originNote,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String runningNumber,
+                required DateTime harvestDate,
+                required String extractionLocation,
+                required String honeyType,
+                Value<double?> waterContentPercent = const Value.absent(),
+                required double amountKg,
+                Value<DateTime?> bottledAt = const Value.absent(),
+                Value<String> labelNumberFrom = const Value.absent(),
+                Value<String> labelNumberTo = const Value.absent(),
+                Value<String> batchNumber = const Value.absent(),
+                Value<DateTime?> bestBeforeDate = const Value.absent(),
+                required String processingType,
+                Value<String> notes = const Value.absent(),
+                Value<String> originNote = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => HoneyBookEntriesCompanion.insert(
+                id: id,
+                runningNumber: runningNumber,
+                harvestDate: harvestDate,
+                extractionLocation: extractionLocation,
+                honeyType: honeyType,
+                waterContentPercent: waterContentPercent,
+                amountKg: amountKg,
+                bottledAt: bottledAt,
+                labelNumberFrom: labelNumberFrom,
+                labelNumberTo: labelNumberTo,
+                batchNumber: batchNumber,
+                bestBeforeDate: bestBeforeDate,
+                processingType: processingType,
+                notes: notes,
+                originNote: originNote,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$HoneyBookEntriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $HoneyBookEntriesTable,
+      HoneyBookEntry,
+      $$HoneyBookEntriesTableFilterComposer,
+      $$HoneyBookEntriesTableOrderingComposer,
+      $$HoneyBookEntriesTableAnnotationComposer,
+      $$HoneyBookEntriesTableCreateCompanionBuilder,
+      $$HoneyBookEntriesTableUpdateCompanionBuilder,
+      (
+        HoneyBookEntry,
+        BaseReferences<_$AppDatabase, $HoneyBookEntriesTable, HoneyBookEntry>,
+      ),
+      HoneyBookEntry,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -7449,4 +8901,6 @@ class $AppDatabaseManager {
       $$InspectionPhotosTableTableManager(_db, _db.inspectionPhotos);
   $$PhotoAttachmentsTableTableManager get photoAttachments =>
       $$PhotoAttachmentsTableTableManager(_db, _db.photoAttachments);
+  $$HoneyBookEntriesTableTableManager get honeyBookEntries =>
+      $$HoneyBookEntriesTableTableManager(_db, _db.honeyBookEntries);
 }
