@@ -2,6 +2,7 @@ import '../database/app_database.dart';
 import '../repositories/apiary_repository.dart';
 import '../repositories/hive_repository.dart';
 import '../repositories/inspection_repository.dart';
+import '../repositories/photo_attachment_repository.dart';
 import '../repositories/task_repository.dart';
 import '../seed/database_seed.dart';
 
@@ -10,6 +11,7 @@ class AppRepositories {
     : apiaries = ApiaryRepository(database),
       hives = HiveRepository(database),
       inspections = InspectionRepository(database),
+      photos = PhotoAttachmentRepository(database),
       tasks = TaskRepository(database);
 
   static final AppRepositories instance = AppRepositories.withDatabase(
@@ -20,6 +22,7 @@ class AppRepositories {
   final ApiaryRepository apiaries;
   final HiveRepository hives;
   final InspectionRepository inspections;
+  final PhotoAttachmentRepository photos;
   final TaskRepository tasks;
 
   Future<void> initialize() async {

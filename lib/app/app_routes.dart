@@ -11,6 +11,7 @@ class AppRoutes {
   static const inspectionCreate = '/inspections/create';
   static const inspectionDetail = '/inspections/detail';
   static const inspectionHistory = '/inspections/history';
+  static const stockCardImport = '/stock-cards/import';
   static const tasks = '/tasks';
   static const taskForm = '/tasks/form';
 }

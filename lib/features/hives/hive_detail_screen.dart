@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../../app/app_routes.dart';
@@ -6,8 +7,10 @@ import '../../core/models/bee_stand.dart';
 import '../../core/models/beekeeper_task.dart';
 import '../../core/models/hive.dart';
 import '../../core/models/inspection.dart';
+import '../../core/models/photo_attachment.dart';
 import '../../core/services/app_data_listener.dart';
 import '../../core/services/app_repositories.dart';
+import '../../core/widgets/photo_preview.dart';
 import 'hive_form_screen.dart';
 import '../inspections/inspection_create_screen.dart';
 import '../tasks/task_form_screen.dart';
@@ -42,12 +45,18 @@ class _HiveDetailScreenState extends State<HiveDetailScreen>
     final beeStand = await repositories.apiaries.getById(hive.beeStandId);
     final inspections = await repositories.inspections.getForHive(hive.id);
     final openTasks = await repositories.tasks.getOpenForHive(hive.id);
+    final photos = await repositories.photos.getForHive(hive.id);
+    final latestInspectionPhotos = inspections.isEmpty
+        ? <PhotoAttachment>[]
+        : await repositories.photos.getForInspection(inspections.first.id);
 
     return _HiveDetailData(
       hive: hive,
       beeStand: beeStand,
       inspections: inspections,
       openTasks: openTasks,
+      photos: photos,
+      latestInspectionPhotos: latestInspectionPhotos,
     );
   }
 
@@ -197,6 +206,38 @@ class _HiveDetailScreenState extends State<HiveDetailScreen>
     );
   }
 
+  Future<void> _pickHivePhotos(String hiveId) async {
+    final result = await FilePicker.platform.pickFiles(
+      allowMultiple: true,
+      type: FileType.image,
+      withData: false,
+    );
+
+    if (result == null || result.files.isEmpty) {
+      return;
+    }
+
+    final now = DateTime.now();
+    var index = 0;
+    final photos = result.files.map((file) {
+      return PhotoAttachment(
+        id: 'photo-${now.microsecondsSinceEpoch}-${index++}',
+        localPath: file.path ?? file.name,
+        filename: file.name,
+        linkedHiveId: hiveId,
+        linkedInspectionId: null,
+        type: PhotoAttachmentType.hivePhoto,
+        createdAt: now,
+        notes: '',
+      );
+    });
+
+    await AppRepositories.instance.photos.upsertAll(photos);
+    if (mounted) {
+      await _reload();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (widget.hiveId == null) {
@@ -224,13 +265,12 @@ class _HiveDetailScreenState extends State<HiveDetailScreen>
           body: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              Text(
-                hive.number,
-                style: Theme.of(context).textTheme.headlineMedium,
+              _HiveHeader(
+                hive: hive,
+                beeStand: data.beeStand,
+                primaryPhoto: data.photos.isEmpty ? null : data.photos.first,
               ),
-              const SizedBox(height: 8),
-              Text('${data.beeStand.name} - ${data.beeStand.location}'),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
               _ActionGrid(
                 onCreateTask: () => _openTaskForm(hive.id),
                 onEditHive: () => _openHiveForm(hive.id),
@@ -267,10 +307,29 @@ class _HiveDetailScreenState extends State<HiveDetailScreen>
                   else
                     _InspectionSummary(
                       inspection: latestInspection,
+                      photos: data.latestInspectionPhotos,
                       onEdit: () => _openInspectionEditForm(latestInspection),
+                      onOpenPhotos: () =>
+                          _openInspectionDetail(latestInspection.id),
                       onDelete: () =>
                           _confirmDeleteInspection(latestInspection),
                     ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              _SectionCard(
+                title: 'Fotos vom Volk',
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: () => _pickHivePhotos(hive.id),
+                    icon: const Icon(Icons.add_photo_alternate_outlined),
+                    label: const Text('Foto zum Volk hinzufuegen'),
+                  ),
+                  const SizedBox(height: 12),
+                  if (data.photos.isEmpty)
+                    const Text('Noch keine Fotos zu diesem Volk.')
+                  else
+                    _PhotoAttachmentList(photos: data.photos),
                 ],
               ),
               const SizedBox(height: 12),
@@ -334,12 +393,16 @@ class _HiveDetailData {
     required this.beeStand,
     required this.inspections,
     required this.openTasks,
+    required this.photos,
+    required this.latestInspectionPhotos,
   });
 
   final Hive hive;
   final BeeStand beeStand;
   final List<Inspection> inspections;
   final List<BeekeeperTask> openTasks;
+  final List<PhotoAttachment> photos;
+  final List<PhotoAttachment> latestInspectionPhotos;
 }
 
 class _ActionGrid extends StatelessWidget {
@@ -439,15 +502,125 @@ class _SectionCard extends StatelessWidget {
   }
 }
 
+class _HiveHeader extends StatelessWidget {
+  const _HiveHeader({
+    required this.hive,
+    required this.beeStand,
+    required this.primaryPhoto,
+  });
+
+  final Hive hive;
+  final BeeStand beeStand;
+  final PhotoAttachment? primaryPhoto;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final photo = _HiveTitlePhoto(photo: primaryPhoto);
+            final details = Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  hive.number,
+                  style: Theme.of(context).textTheme.headlineMedium,
+                ),
+                const SizedBox(height: 6),
+                Text('${beeStand.name} - ${beeStand.location}'),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    Chip(label: Text(hive.statusLabel)),
+                    Chip(label: Text('Koenigin ${hive.queenYear}')),
+                    Chip(label: Text(hive.queenColor)),
+                  ],
+                ),
+              ],
+            );
+
+            if (constraints.maxWidth < 560) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [details, const SizedBox(height: 12), photo],
+              );
+            }
+
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(child: details),
+                const SizedBox(width: 16),
+                photo,
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _HiveTitlePhoto extends StatelessWidget {
+  const _HiveTitlePhoto({required this.photo});
+
+  final PhotoAttachment? photo;
+
+  @override
+  Widget build(BuildContext context) {
+    final photo = this.photo;
+    if (photo == null) {
+      return Container(
+        width: 160,
+        height: 120,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: const Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.image_outlined),
+            SizedBox(height: 6),
+            Text('Kein Foto'),
+          ],
+        ),
+      );
+    }
+
+    return PhotoThumbnail(
+      localPath: photo.localPath,
+      filename: photo.filename,
+      width: 160,
+      height: 120,
+      onTap: () => showPhotoPreviewDialog(
+        context: context,
+        localPath: photo.localPath,
+        filename: photo.filename,
+        title: 'Foto vom Volk',
+      ),
+    );
+  }
+}
+
 class _InspectionSummary extends StatelessWidget {
   const _InspectionSummary({
     required this.inspection,
+    required this.photos,
     required this.onEdit,
+    required this.onOpenPhotos,
     required this.onDelete,
   });
 
   final Inspection inspection;
+  final List<PhotoAttachment> photos;
   final VoidCallback onEdit;
+  final VoidCallback onOpenPhotos;
   final VoidCallback onDelete;
 
   @override
@@ -508,6 +681,33 @@ class _InspectionSummary extends StatelessWidget {
         ),
         _DetailRow(label: 'Auffaelligkeiten', value: _findingsText(inspection)),
         _DetailRow(label: 'Notizen', value: inspection.notes),
+        if (photos.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 12,
+            runSpacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              PhotoThumbnail(
+                localPath: photos.first.localPath,
+                filename: photos.first.filename,
+                width: 88,
+                height: 66,
+                onTap: onOpenPhotos,
+              ),
+              Text(
+                photos.length == 1
+                    ? '1 Kontrollfoto vorhanden'
+                    : '${photos.length} Kontrollfotos vorhanden',
+              ),
+              OutlinedButton.icon(
+                onPressed: onOpenPhotos,
+                icon: const Icon(Icons.photo_library_outlined),
+                label: const Text('Kontrollfotos anzeigen'),
+              ),
+            ],
+          ),
+        ],
       ],
     );
   }
@@ -555,6 +755,35 @@ class _DetailRow extends StatelessWidget {
           Expanded(child: Text(value)),
         ],
       ),
+    );
+  }
+}
+
+class _PhotoAttachmentList extends StatelessWidget {
+  const _PhotoAttachmentList({required this.photos});
+
+  final List<PhotoAttachment> photos;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 12,
+      runSpacing: 12,
+      children: [
+        for (final photo in photos)
+          PhotoThumbnail(
+            localPath: photo.localPath,
+            filename: photo.filename,
+            width: 112,
+            height: 84,
+            onTap: () => showPhotoPreviewDialog(
+              context: context,
+              localPath: photo.localPath,
+              filename: photo.filename,
+              title: 'Foto vom Volk',
+            ),
+          ),
+      ],
     );
   }
 }

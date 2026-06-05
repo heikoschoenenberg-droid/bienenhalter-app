@@ -3939,6 +3939,529 @@ class InspectionPhotosCompanion extends UpdateCompanion<InspectionPhoto> {
   }
 }
 
+class $PhotoAttachmentsTable extends PhotoAttachments
+    with TableInfo<$PhotoAttachmentsTable, PhotoAttachment> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PhotoAttachmentsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _localPathMeta = const VerificationMeta(
+    'localPath',
+  );
+  @override
+  late final GeneratedColumn<String> localPath = GeneratedColumn<String>(
+    'local_path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _filenameMeta = const VerificationMeta(
+    'filename',
+  );
+  @override
+  late final GeneratedColumn<String> filename = GeneratedColumn<String>(
+    'filename',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _linkedHiveIdMeta = const VerificationMeta(
+    'linkedHiveId',
+  );
+  @override
+  late final GeneratedColumn<String> linkedHiveId = GeneratedColumn<String>(
+    'linked_hive_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _linkedInspectionIdMeta =
+      const VerificationMeta('linkedInspectionId');
+  @override
+  late final GeneratedColumn<String> linkedInspectionId =
+      GeneratedColumn<String>(
+        'linked_inspection_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    localPath,
+    filename,
+    linkedHiveId,
+    linkedInspectionId,
+    type,
+    createdAt,
+    notes,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'photo_attachments';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PhotoAttachment> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('local_path')) {
+      context.handle(
+        _localPathMeta,
+        localPath.isAcceptableOrUnknown(data['local_path']!, _localPathMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_localPathMeta);
+    }
+    if (data.containsKey('filename')) {
+      context.handle(
+        _filenameMeta,
+        filename.isAcceptableOrUnknown(data['filename']!, _filenameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_filenameMeta);
+    }
+    if (data.containsKey('linked_hive_id')) {
+      context.handle(
+        _linkedHiveIdMeta,
+        linkedHiveId.isAcceptableOrUnknown(
+          data['linked_hive_id']!,
+          _linkedHiveIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('linked_inspection_id')) {
+      context.handle(
+        _linkedInspectionIdMeta,
+        linkedInspectionId.isAcceptableOrUnknown(
+          data['linked_inspection_id']!,
+          _linkedInspectionIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+        _typeMeta,
+        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_typeMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PhotoAttachment map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PhotoAttachment(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      localPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}local_path'],
+      )!,
+      filename: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}filename'],
+      )!,
+      linkedHiveId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}linked_hive_id'],
+      ),
+      linkedInspectionId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}linked_inspection_id'],
+      ),
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      )!,
+    );
+  }
+
+  @override
+  $PhotoAttachmentsTable createAlias(String alias) {
+    return $PhotoAttachmentsTable(attachedDatabase, alias);
+  }
+}
+
+class PhotoAttachment extends DataClass implements Insertable<PhotoAttachment> {
+  final String id;
+  final String localPath;
+  final String filename;
+  final String? linkedHiveId;
+  final String? linkedInspectionId;
+  final String type;
+  final DateTime createdAt;
+  final String notes;
+  const PhotoAttachment({
+    required this.id,
+    required this.localPath,
+    required this.filename,
+    this.linkedHiveId,
+    this.linkedInspectionId,
+    required this.type,
+    required this.createdAt,
+    required this.notes,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['local_path'] = Variable<String>(localPath);
+    map['filename'] = Variable<String>(filename);
+    if (!nullToAbsent || linkedHiveId != null) {
+      map['linked_hive_id'] = Variable<String>(linkedHiveId);
+    }
+    if (!nullToAbsent || linkedInspectionId != null) {
+      map['linked_inspection_id'] = Variable<String>(linkedInspectionId);
+    }
+    map['type'] = Variable<String>(type);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['notes'] = Variable<String>(notes);
+    return map;
+  }
+
+  PhotoAttachmentsCompanion toCompanion(bool nullToAbsent) {
+    return PhotoAttachmentsCompanion(
+      id: Value(id),
+      localPath: Value(localPath),
+      filename: Value(filename),
+      linkedHiveId: linkedHiveId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(linkedHiveId),
+      linkedInspectionId: linkedInspectionId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(linkedInspectionId),
+      type: Value(type),
+      createdAt: Value(createdAt),
+      notes: Value(notes),
+    );
+  }
+
+  factory PhotoAttachment.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PhotoAttachment(
+      id: serializer.fromJson<String>(json['id']),
+      localPath: serializer.fromJson<String>(json['localPath']),
+      filename: serializer.fromJson<String>(json['filename']),
+      linkedHiveId: serializer.fromJson<String?>(json['linkedHiveId']),
+      linkedInspectionId: serializer.fromJson<String?>(
+        json['linkedInspectionId'],
+      ),
+      type: serializer.fromJson<String>(json['type']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      notes: serializer.fromJson<String>(json['notes']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'localPath': serializer.toJson<String>(localPath),
+      'filename': serializer.toJson<String>(filename),
+      'linkedHiveId': serializer.toJson<String?>(linkedHiveId),
+      'linkedInspectionId': serializer.toJson<String?>(linkedInspectionId),
+      'type': serializer.toJson<String>(type),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'notes': serializer.toJson<String>(notes),
+    };
+  }
+
+  PhotoAttachment copyWith({
+    String? id,
+    String? localPath,
+    String? filename,
+    Value<String?> linkedHiveId = const Value.absent(),
+    Value<String?> linkedInspectionId = const Value.absent(),
+    String? type,
+    DateTime? createdAt,
+    String? notes,
+  }) => PhotoAttachment(
+    id: id ?? this.id,
+    localPath: localPath ?? this.localPath,
+    filename: filename ?? this.filename,
+    linkedHiveId: linkedHiveId.present ? linkedHiveId.value : this.linkedHiveId,
+    linkedInspectionId: linkedInspectionId.present
+        ? linkedInspectionId.value
+        : this.linkedInspectionId,
+    type: type ?? this.type,
+    createdAt: createdAt ?? this.createdAt,
+    notes: notes ?? this.notes,
+  );
+  PhotoAttachment copyWithCompanion(PhotoAttachmentsCompanion data) {
+    return PhotoAttachment(
+      id: data.id.present ? data.id.value : this.id,
+      localPath: data.localPath.present ? data.localPath.value : this.localPath,
+      filename: data.filename.present ? data.filename.value : this.filename,
+      linkedHiveId: data.linkedHiveId.present
+          ? data.linkedHiveId.value
+          : this.linkedHiveId,
+      linkedInspectionId: data.linkedInspectionId.present
+          ? data.linkedInspectionId.value
+          : this.linkedInspectionId,
+      type: data.type.present ? data.type.value : this.type,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      notes: data.notes.present ? data.notes.value : this.notes,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PhotoAttachment(')
+          ..write('id: $id, ')
+          ..write('localPath: $localPath, ')
+          ..write('filename: $filename, ')
+          ..write('linkedHiveId: $linkedHiveId, ')
+          ..write('linkedInspectionId: $linkedInspectionId, ')
+          ..write('type: $type, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('notes: $notes')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    localPath,
+    filename,
+    linkedHiveId,
+    linkedInspectionId,
+    type,
+    createdAt,
+    notes,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PhotoAttachment &&
+          other.id == this.id &&
+          other.localPath == this.localPath &&
+          other.filename == this.filename &&
+          other.linkedHiveId == this.linkedHiveId &&
+          other.linkedInspectionId == this.linkedInspectionId &&
+          other.type == this.type &&
+          other.createdAt == this.createdAt &&
+          other.notes == this.notes);
+}
+
+class PhotoAttachmentsCompanion extends UpdateCompanion<PhotoAttachment> {
+  final Value<String> id;
+  final Value<String> localPath;
+  final Value<String> filename;
+  final Value<String?> linkedHiveId;
+  final Value<String?> linkedInspectionId;
+  final Value<String> type;
+  final Value<DateTime> createdAt;
+  final Value<String> notes;
+  final Value<int> rowid;
+  const PhotoAttachmentsCompanion({
+    this.id = const Value.absent(),
+    this.localPath = const Value.absent(),
+    this.filename = const Value.absent(),
+    this.linkedHiveId = const Value.absent(),
+    this.linkedInspectionId = const Value.absent(),
+    this.type = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PhotoAttachmentsCompanion.insert({
+    required String id,
+    required String localPath,
+    required String filename,
+    this.linkedHiveId = const Value.absent(),
+    this.linkedInspectionId = const Value.absent(),
+    required String type,
+    required DateTime createdAt,
+    this.notes = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       localPath = Value(localPath),
+       filename = Value(filename),
+       type = Value(type),
+       createdAt = Value(createdAt);
+  static Insertable<PhotoAttachment> custom({
+    Expression<String>? id,
+    Expression<String>? localPath,
+    Expression<String>? filename,
+    Expression<String>? linkedHiveId,
+    Expression<String>? linkedInspectionId,
+    Expression<String>? type,
+    Expression<DateTime>? createdAt,
+    Expression<String>? notes,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (localPath != null) 'local_path': localPath,
+      if (filename != null) 'filename': filename,
+      if (linkedHiveId != null) 'linked_hive_id': linkedHiveId,
+      if (linkedInspectionId != null)
+        'linked_inspection_id': linkedInspectionId,
+      if (type != null) 'type': type,
+      if (createdAt != null) 'created_at': createdAt,
+      if (notes != null) 'notes': notes,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PhotoAttachmentsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? localPath,
+    Value<String>? filename,
+    Value<String?>? linkedHiveId,
+    Value<String?>? linkedInspectionId,
+    Value<String>? type,
+    Value<DateTime>? createdAt,
+    Value<String>? notes,
+    Value<int>? rowid,
+  }) {
+    return PhotoAttachmentsCompanion(
+      id: id ?? this.id,
+      localPath: localPath ?? this.localPath,
+      filename: filename ?? this.filename,
+      linkedHiveId: linkedHiveId ?? this.linkedHiveId,
+      linkedInspectionId: linkedInspectionId ?? this.linkedInspectionId,
+      type: type ?? this.type,
+      createdAt: createdAt ?? this.createdAt,
+      notes: notes ?? this.notes,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (localPath.present) {
+      map['local_path'] = Variable<String>(localPath.value);
+    }
+    if (filename.present) {
+      map['filename'] = Variable<String>(filename.value);
+    }
+    if (linkedHiveId.present) {
+      map['linked_hive_id'] = Variable<String>(linkedHiveId.value);
+    }
+    if (linkedInspectionId.present) {
+      map['linked_inspection_id'] = Variable<String>(linkedInspectionId.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PhotoAttachmentsCompanion(')
+          ..write('id: $id, ')
+          ..write('localPath: $localPath, ')
+          ..write('filename: $filename, ')
+          ..write('linkedHiveId: $linkedHiveId, ')
+          ..write('linkedInspectionId: $linkedInspectionId, ')
+          ..write('type: $type, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('notes: $notes, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -3947,6 +4470,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $InspectionsTable inspections = $InspectionsTable(this);
   late final $TasksTable tasks = $TasksTable(this);
   late final $InspectionPhotosTable inspectionPhotos = $InspectionPhotosTable(
+    this,
+  );
+  late final $PhotoAttachmentsTable photoAttachments = $PhotoAttachmentsTable(
     this,
   );
   @override
@@ -3959,6 +4485,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     inspections,
     tasks,
     inspectionPhotos,
+    photoAttachments,
   ];
 }
 
@@ -6639,6 +7166,273 @@ typedef $$InspectionPhotosTableProcessedTableManager =
       InspectionPhoto,
       PrefetchHooks Function({bool inspectionId})
     >;
+typedef $$PhotoAttachmentsTableCreateCompanionBuilder =
+    PhotoAttachmentsCompanion Function({
+      required String id,
+      required String localPath,
+      required String filename,
+      Value<String?> linkedHiveId,
+      Value<String?> linkedInspectionId,
+      required String type,
+      required DateTime createdAt,
+      Value<String> notes,
+      Value<int> rowid,
+    });
+typedef $$PhotoAttachmentsTableUpdateCompanionBuilder =
+    PhotoAttachmentsCompanion Function({
+      Value<String> id,
+      Value<String> localPath,
+      Value<String> filename,
+      Value<String?> linkedHiveId,
+      Value<String?> linkedInspectionId,
+      Value<String> type,
+      Value<DateTime> createdAt,
+      Value<String> notes,
+      Value<int> rowid,
+    });
+
+class $$PhotoAttachmentsTableFilterComposer
+    extends Composer<_$AppDatabase, $PhotoAttachmentsTable> {
+  $$PhotoAttachmentsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get localPath => $composableBuilder(
+    column: $table.localPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get filename => $composableBuilder(
+    column: $table.filename,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get linkedHiveId => $composableBuilder(
+    column: $table.linkedHiveId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get linkedInspectionId => $composableBuilder(
+    column: $table.linkedInspectionId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PhotoAttachmentsTableOrderingComposer
+    extends Composer<_$AppDatabase, $PhotoAttachmentsTable> {
+  $$PhotoAttachmentsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get localPath => $composableBuilder(
+    column: $table.localPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get filename => $composableBuilder(
+    column: $table.filename,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get linkedHiveId => $composableBuilder(
+    column: $table.linkedHiveId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get linkedInspectionId => $composableBuilder(
+    column: $table.linkedInspectionId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PhotoAttachmentsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PhotoAttachmentsTable> {
+  $$PhotoAttachmentsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get localPath =>
+      $composableBuilder(column: $table.localPath, builder: (column) => column);
+
+  GeneratedColumn<String> get filename =>
+      $composableBuilder(column: $table.filename, builder: (column) => column);
+
+  GeneratedColumn<String> get linkedHiveId => $composableBuilder(
+    column: $table.linkedHiveId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get linkedInspectionId => $composableBuilder(
+    column: $table.linkedInspectionId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+}
+
+class $$PhotoAttachmentsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PhotoAttachmentsTable,
+          PhotoAttachment,
+          $$PhotoAttachmentsTableFilterComposer,
+          $$PhotoAttachmentsTableOrderingComposer,
+          $$PhotoAttachmentsTableAnnotationComposer,
+          $$PhotoAttachmentsTableCreateCompanionBuilder,
+          $$PhotoAttachmentsTableUpdateCompanionBuilder,
+          (
+            PhotoAttachment,
+            BaseReferences<
+              _$AppDatabase,
+              $PhotoAttachmentsTable,
+              PhotoAttachment
+            >,
+          ),
+          PhotoAttachment,
+          PrefetchHooks Function()
+        > {
+  $$PhotoAttachmentsTableTableManager(
+    _$AppDatabase db,
+    $PhotoAttachmentsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PhotoAttachmentsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PhotoAttachmentsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PhotoAttachmentsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> localPath = const Value.absent(),
+                Value<String> filename = const Value.absent(),
+                Value<String?> linkedHiveId = const Value.absent(),
+                Value<String?> linkedInspectionId = const Value.absent(),
+                Value<String> type = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<String> notes = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PhotoAttachmentsCompanion(
+                id: id,
+                localPath: localPath,
+                filename: filename,
+                linkedHiveId: linkedHiveId,
+                linkedInspectionId: linkedInspectionId,
+                type: type,
+                createdAt: createdAt,
+                notes: notes,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String localPath,
+                required String filename,
+                Value<String?> linkedHiveId = const Value.absent(),
+                Value<String?> linkedInspectionId = const Value.absent(),
+                required String type,
+                required DateTime createdAt,
+                Value<String> notes = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PhotoAttachmentsCompanion.insert(
+                id: id,
+                localPath: localPath,
+                filename: filename,
+                linkedHiveId: linkedHiveId,
+                linkedInspectionId: linkedInspectionId,
+                type: type,
+                createdAt: createdAt,
+                notes: notes,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PhotoAttachmentsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PhotoAttachmentsTable,
+      PhotoAttachment,
+      $$PhotoAttachmentsTableFilterComposer,
+      $$PhotoAttachmentsTableOrderingComposer,
+      $$PhotoAttachmentsTableAnnotationComposer,
+      $$PhotoAttachmentsTableCreateCompanionBuilder,
+      $$PhotoAttachmentsTableUpdateCompanionBuilder,
+      (
+        PhotoAttachment,
+        BaseReferences<_$AppDatabase, $PhotoAttachmentsTable, PhotoAttachment>,
+      ),
+      PhotoAttachment,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -6653,4 +7447,6 @@ class $AppDatabaseManager {
       $$TasksTableTableManager(_db, _db.tasks);
   $$InspectionPhotosTableTableManager get inspectionPhotos =>
       $$InspectionPhotosTableTableManager(_db, _db.inspectionPhotos);
+  $$PhotoAttachmentsTableTableManager get photoAttachments =>
+      $$PhotoAttachmentsTableTableManager(_db, _db.photoAttachments);
 }

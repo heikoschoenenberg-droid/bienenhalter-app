@@ -7,6 +7,7 @@ import '../models/bee_stand.dart';
 import '../models/beekeeper_task.dart';
 import '../models/hive.dart';
 import '../models/inspection.dart';
+import '../models/photo_attachment.dart';
 import 'app_data_events.dart';
 
 class AppRepositories {
@@ -14,6 +15,7 @@ class AppRepositories {
     : apiaries = WebApiaryRepository._(_WebJsonStore.instance),
       hives = WebHiveRepository._(_WebJsonStore.instance),
       inspections = WebInspectionRepository._(_WebJsonStore.instance),
+      photos = WebPhotoAttachmentRepository._(_WebJsonStore.instance),
       tasks = WebTaskRepository._(_WebJsonStore.instance);
 
   static final AppRepositories instance = AppRepositories._();
@@ -21,6 +23,7 @@ class AppRepositories {
   final WebApiaryRepository apiaries;
   final WebHiveRepository hives;
   final WebInspectionRepository inspections;
+  final WebPhotoAttachmentRepository photos;
   final WebTaskRepository tasks;
 
   Future<void> initialize() async {
@@ -252,6 +255,53 @@ class WebTaskRepository {
   }
 }
 
+class WebPhotoAttachmentRepository {
+  const WebPhotoAttachmentRepository._(this._store);
+
+  final _WebJsonStore _store;
+
+  Future<List<PhotoAttachment>> getForHive(String hiveId) async {
+    return _store.photos
+        .where(
+          (photo) =>
+              photo.linkedHiveId == hiveId &&
+              photo.type == PhotoAttachmentType.hivePhoto,
+        )
+        .toList()
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  }
+
+  Future<List<PhotoAttachment>> getForInspection(String inspectionId) async {
+    return _store.photos
+        .where((photo) => photo.linkedInspectionId == inspectionId)
+        .toList()
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  }
+
+  Future<void> upsert(PhotoAttachment photo) async {
+    final index = _store.photos.indexWhere((item) => item.id == photo.id);
+    if (index == -1) {
+      _store.photos.add(photo);
+    } else {
+      _store.photos[index] = photo;
+    }
+    _store.save();
+    AppDataEvents.notifyChanged();
+  }
+
+  Future<void> upsertAll(Iterable<PhotoAttachment> photos) async {
+    for (final photo in photos) {
+      await upsert(photo);
+    }
+  }
+
+  Future<void> delete(String photoId) async {
+    _store.photos.removeWhere((photo) => photo.id == photoId);
+    _store.save();
+    AppDataEvents.notifyChanged();
+  }
+}
+
 class _WebJsonStore {
   _WebJsonStore._();
 
@@ -261,6 +311,7 @@ class _WebJsonStore {
   final List<BeeStand> apiaries = [];
   final List<Hive> hives = [];
   final List<Inspection> inspections = [];
+  final List<PhotoAttachment> photos = [];
   final List<BeekeeperTask> tasks = [];
 
   bool _loaded = false;
@@ -300,6 +351,13 @@ class _WebJsonStore {
           (item) => _inspectionFromJson(item as Map<String, dynamic>),
         ),
       );
+    photos
+      ..clear()
+      ..addAll(
+        ((data['photos'] as List<dynamic>?) ?? const []).map(
+          (item) => _photoAttachmentFromJson(item as Map<String, dynamic>),
+        ),
+      );
     tasks
       ..clear()
       ..addAll(
@@ -315,6 +373,7 @@ class _WebJsonStore {
       'apiaries': apiaries.map(_beeStandToJson).toList(),
       'hives': hives.map(_hiveToJson).toList(),
       'inspections': inspections.map(_inspectionToJson).toList(),
+      'photos': photos.map(_photoAttachmentToJson).toList(),
       'tasks': tasks.map(_taskToJson).toList(),
     };
     web.window.localStorage.setItem(_storageKey, jsonEncode(data));
@@ -330,6 +389,7 @@ class _WebJsonStore {
     inspections
       ..clear()
       ..addAll(DemoData.inspections);
+    photos.clear();
     tasks
       ..clear()
       ..addAll(DemoData.tasks);
@@ -459,6 +519,35 @@ class _WebJsonStore {
       feedingDone: json['feedingDone'] as bool,
       feedType: json['feedType'] as String,
       feedAmount: (json['feedAmount'] as num?)?.toDouble(),
+      notes: json['notes'] as String? ?? '',
+    );
+  }
+
+  Map<String, dynamic> _photoAttachmentToJson(PhotoAttachment photo) {
+    return {
+      'id': photo.id,
+      'localPath': photo.localPath,
+      'filename': photo.filename,
+      'linkedHiveId': photo.linkedHiveId,
+      'linkedInspectionId': photo.linkedInspectionId,
+      'type': photo.type.name,
+      'createdAt': photo.createdAt.toIso8601String(),
+      'notes': photo.notes,
+    };
+  }
+
+  PhotoAttachment _photoAttachmentFromJson(Map<String, dynamic> json) {
+    return PhotoAttachment(
+      id: json['id'] as String,
+      localPath: json['localPath'] as String,
+      filename: json['filename'] as String,
+      linkedHiveId: json['linkedHiveId'] as String?,
+      linkedInspectionId: json['linkedInspectionId'] as String?,
+      type: PhotoAttachmentType.values.firstWhere(
+        (type) => type.name == json['type'],
+        orElse: () => PhotoAttachmentType.hivePhoto,
+      ),
+      createdAt: DateTime.parse(json['createdAt'] as String),
       notes: json['notes'] as String? ?? '',
     );
   }

@@ -1,15 +1,25 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/date_format.dart';
 import '../../core/models/hive.dart';
 import '../../core/models/inspection.dart';
+import '../../core/models/photo_attachment.dart';
+import '../../core/models/stock_card_photo_import.dart';
 import '../../core/services/app_repositories.dart';
+import '../../core/services/stock_card_import_service.dart';
+import '../../core/widgets/photo_preview.dart';
 
 class InspectionFormArguments {
-  const InspectionFormArguments({this.hiveId, this.inspectionId});
+  const InspectionFormArguments({
+    this.hiveId,
+    this.inspectionId,
+    this.sourcePhotoImportId,
+  });
 
   final String? hiveId;
   final String? inspectionId;
+  final String? sourcePhotoImportId;
 }
 
 class InspectionCreateScreen extends StatefulWidget {
@@ -32,6 +42,9 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
   String? _selectedHiveId;
   late Future<List<Hive>> _hivesFuture;
   Inspection? _existingInspection;
+  StockCardPhotoImport? _sourcePhotoImport;
+  final List<PhotoAttachment> _photos = [];
+  final Set<String> _removedPhotoIds = {};
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _selectedTime = TimeOfDay.now();
 
@@ -64,6 +77,7 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
     super.initState();
     _selectedHiveId = widget.arguments?.hiveId;
     _hivesFuture = AppRepositories.instance.hives.getAll();
+    _loadSourcePhotoImport();
     _loadExistingInspection();
   }
 
@@ -86,7 +100,13 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
     final inspection = await AppRepositories.instance.inspections.getById(
       inspectionId,
     );
+    final photos = await AppRepositories.instance.photos.getForInspection(
+      inspectionId,
+    );
     _existingInspection = inspection;
+    _photos
+      ..clear()
+      ..addAll(photos);
     _selectedHiveId = inspection.hiveId;
     _selectedDate = DateTime(
       inspection.date.year,
@@ -129,6 +149,32 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
     }
   }
 
+  void _loadSourcePhotoImport() {
+    final importId = widget.arguments?.sourcePhotoImportId;
+    if (importId == null) {
+      return;
+    }
+
+    final item = StockCardImportService.instance.getById(importId);
+    if (item == null) {
+      return;
+    }
+
+    _sourcePhotoImport = item;
+    _photos.add(
+      PhotoAttachment(
+        id: 'photo-${DateTime.now().microsecondsSinceEpoch}',
+        localPath: item.path ?? item.filename,
+        filename: item.filename,
+        linkedHiveId: item.hiveId,
+        linkedInspectionId: null,
+        type: PhotoAttachmentType.stockCardImport,
+        createdAt: DateTime.now(),
+        notes: 'Aus Stockkartenimport',
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -149,6 +195,14 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 16),
+            if (_photos.isNotEmpty) ...[
+              _InspectionPhotoReference(
+                photos: _photos,
+                sourcePhotoImport: _sourcePhotoImport,
+                onRemove: _removePhoto,
+              ),
+              const SizedBox(height: 16),
+            ],
             _SectionCard(
               title: 'Allgemein',
               children: [
@@ -409,6 +463,22 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
                 ),
               ],
             ),
+            _SectionCard(
+              title: 'Fotos zur Kontrolle',
+              children: [
+                Text(
+                  _photos.isEmpty
+                      ? 'Keine Fotos zugeordnet.'
+                      : '${_photos.length} Foto(s) zugeordnet.',
+                ),
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: _pickPhotos,
+                  icon: const Icon(Icons.add_photo_alternate_outlined),
+                  label: const Text('Foto zur Kontrolle hinzufuegen'),
+                ),
+              ],
+            ),
             const SizedBox(height: 8),
             FilledButton.icon(
               onPressed: _saveInspection,
@@ -506,6 +576,24 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
     } else {
       await AppRepositories.instance.inspections.createInspection(inspection);
     }
+
+    await AppRepositories.instance.photos.upsertAll(
+      _photos.map(
+        (photo) => photo.copyWith(
+          clearLinkedHiveId: true,
+          linkedInspectionId: inspection.id,
+          type: PhotoAttachmentType.inspectionPhoto,
+        ),
+      ),
+    );
+    for (final photoId in _removedPhotoIds) {
+      await AppRepositories.instance.photos.delete(photoId);
+    }
+    final sourceImportId = widget.arguments?.sourcePhotoImportId;
+    if (sourceImportId != null) {
+      StockCardImportService.instance.markDraftCreated(sourceImportId);
+    }
+
     if (!mounted) {
       return;
     }
@@ -519,6 +607,47 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
       ),
     );
     Navigator.pop(context, true);
+  }
+
+  Future<void> _pickPhotos() async {
+    final result = await FilePicker.platform.pickFiles(
+      allowMultiple: true,
+      type: FileType.image,
+      withData: false,
+    );
+
+    if (result == null || result.files.isEmpty) {
+      return;
+    }
+
+    final now = DateTime.now();
+    var index = 0;
+    final additions = result.files.map((file) {
+      return PhotoAttachment(
+        id: 'photo-${now.microsecondsSinceEpoch}-${index++}',
+        localPath: file.path ?? file.name,
+        filename: file.name,
+        linkedHiveId: _selectedHiveId,
+        linkedInspectionId: _existingInspection?.id,
+        type: PhotoAttachmentType.inspectionPhoto,
+        createdAt: now,
+        notes: '',
+      );
+    }).toList();
+
+    if (!mounted) {
+      return;
+    }
+    setState(() => _photos.addAll(additions));
+  }
+
+  void _removePhoto(PhotoAttachment photo) {
+    setState(() {
+      _photos.removeWhere((item) => item.id == photo.id);
+      if (photo.linkedInspectionId != null || photo.linkedHiveId != null) {
+        _removedPhotoIds.add(photo.id);
+      }
+    });
   }
 
   String? _validateNonNegativeInt(String? value) {
@@ -591,6 +720,84 @@ class _SectionCard extends StatelessWidget {
             ...children,
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _InspectionPhotoReference extends StatelessWidget {
+  const _InspectionPhotoReference({
+    required this.photos,
+    required this.sourcePhotoImport,
+    required this.onRemove,
+  });
+
+  final List<PhotoAttachment> photos;
+  final StockCardPhotoImport? sourcePhotoImport;
+  final ValueChanged<PhotoAttachment> onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    final primaryPhoto = photos.first;
+    final sourceBytes = sourcePhotoImport?.bytes;
+
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (sourceBytes != null)
+            Image.memory(
+              sourceBytes,
+              width: double.infinity,
+              height: 280,
+              fit: BoxFit.contain,
+            )
+          else
+            PhotoPreview(
+              localPath: primaryPhoto.localPath,
+              filename: primaryPhoto.filename,
+              width: double.infinity,
+              height: 180,
+              fit: BoxFit.contain,
+            ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Foto als Ausfuellhilfe',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 8),
+                Text(primaryPhoto.localPath),
+                if (photos.length > 1) ...[
+                  const SizedBox(height: 12),
+                  Text('${photos.length - 1} weitere Foto(s)'),
+                ],
+                const SizedBox(height: 12),
+                for (final photo in photos)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: PhotoPreview(
+                      localPath: photo.localPath,
+                      filename: photo.filename,
+                      width: 56,
+                      height: 56,
+                    ),
+                    title: Text(photo.filename),
+                    subtitle: Text(photo.localPath),
+                    trailing: IconButton(
+                      onPressed: () => onRemove(photo),
+                      icon: const Icon(Icons.close),
+                      tooltip: 'Foto entfernen',
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

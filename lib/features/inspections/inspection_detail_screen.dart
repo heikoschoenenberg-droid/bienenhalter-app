@@ -5,8 +5,10 @@ import '../../core/date_format.dart';
 import '../../core/models/bee_stand.dart';
 import '../../core/models/hive.dart';
 import '../../core/models/inspection.dart';
+import '../../core/models/photo_attachment.dart';
 import '../../core/services/app_data_listener.dart';
 import '../../core/services/app_repositories.dart';
+import '../../core/widgets/photo_preview.dart';
 import 'inspection_create_screen.dart';
 
 class InspectionDetailScreen extends StatefulWidget {
@@ -58,11 +60,13 @@ class _InspectionDetailScreenState extends State<InspectionDetailScreen>
     final inspection = await repositories.inspections.getById(inspectionId);
     final hive = await repositories.hives.getById(inspection.hiveId);
     final apiary = await repositories.apiaries.getById(hive.beeStandId);
+    final photos = await repositories.photos.getForInspection(inspection.id);
 
     return _InspectionDetailData(
       inspection: inspection,
       hive: hive,
       apiary: apiary,
+      photos: photos,
     );
   }
 
@@ -247,6 +251,15 @@ class _InspectionDetailScreenState extends State<InspectionDetailScreen>
                   ),
                 ],
               ),
+              _SectionCard(
+                title: 'Fotos zur Kontrolle',
+                children: [
+                  if (data.photos.isEmpty)
+                    const Text('Keine Fotos zu dieser Kontrolle.')
+                  else
+                    _PhotoAttachmentList(photos: data.photos),
+                ],
+              ),
             ],
           ),
         );
@@ -317,11 +330,13 @@ class _InspectionDetailData {
     required this.inspection,
     required this.hive,
     required this.apiary,
+    required this.photos,
   });
 
   final Inspection inspection;
   final Hive hive;
   final BeeStand apiary;
+  final List<PhotoAttachment> photos;
 }
 
 class _ActionGrid extends StatelessWidget {
@@ -416,6 +431,35 @@ class _DetailRow extends StatelessWidget {
           Expanded(child: Text(value)),
         ],
       ),
+    );
+  }
+}
+
+class _PhotoAttachmentList extends StatelessWidget {
+  const _PhotoAttachmentList({required this.photos});
+
+  final List<PhotoAttachment> photos;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 12,
+      runSpacing: 12,
+      children: [
+        for (final photo in photos)
+          PhotoThumbnail(
+            localPath: photo.localPath,
+            filename: photo.filename,
+            width: 112,
+            height: 84,
+            onTap: () => showPhotoPreviewDialog(
+              context: context,
+              localPath: photo.localPath,
+              filename: photo.filename,
+              title: 'Kontrollfoto',
+            ),
+          ),
+      ],
     );
   }
 }

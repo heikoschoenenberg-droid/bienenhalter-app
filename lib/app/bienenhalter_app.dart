@@ -10,6 +10,7 @@ import '../features/hives/hive_list_screen.dart';
 import '../features/inspections/inspection_create_screen.dart';
 import '../features/inspections/inspection_detail_screen.dart';
 import '../features/inspections/inspection_history_screen.dart';
+import '../features/photo_import/stock_card_import_screen.dart';
 import '../features/tasks/task_form_screen.dart';
 import '../features/tasks/task_list_screen.dart';
 import 'app_routes.dart';
@@ -60,6 +61,7 @@ class BienenhalterApp extends StatelessWidget {
         inspectionId: arguments is String ? arguments : null,
       ),
       AppRoutes.inspectionHistory => InspectionHistoryScreen(hiveId: hiveId),
+      AppRoutes.stockCardImport => const StockCardImportScreen(),
       AppRoutes.tasks => const TaskListScreen(),
       AppRoutes.taskForm => TaskFormScreen(
         arguments: arguments is TaskFormArguments ? arguments : null,

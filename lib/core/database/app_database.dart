@@ -104,12 +104,46 @@ class InspectionPhotos extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-@DriftDatabase(tables: [Apiaries, Hives, Inspections, Tasks, InspectionPhotos])
+class PhotoAttachments extends Table {
+  TextColumn get id => text()();
+  TextColumn get localPath => text()();
+  TextColumn get filename => text()();
+  TextColumn get linkedHiveId => text().nullable()();
+  TextColumn get linkedInspectionId => text().nullable()();
+  TextColumn get type => text()();
+  DateTimeColumn get createdAt => dateTime()();
+  TextColumn get notes => text().withDefault(const Constant(''))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+@DriftDatabase(
+  tables: [
+    Apiaries,
+    Hives,
+    Inspections,
+    Tasks,
+    InspectionPhotos,
+    PhotoAttachments,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(openDatabaseConnection());
 
   AppDatabase.forExecutor(super.executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration {
+    return MigrationStrategy(
+      onUpgrade: (migrator, from, to) async {
+        if (from < 2) {
+          await migrator.createTable(photoAttachments);
+        }
+      },
+    );
+  }
 }

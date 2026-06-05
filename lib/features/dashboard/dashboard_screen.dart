@@ -126,6 +126,12 @@ class _DashboardScreenState extends State<DashboardScreen>
                 icon: const Icon(Icons.checklist),
                 label: const Text('Aufgaben oeffnen'),
               ),
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: () => _openAndReload(AppRoutes.stockCardImport),
+                icon: const Icon(Icons.photo_library_outlined),
+                label: const Text('Stockkarten auswerten'),
+              ),
             ],
           );
         },

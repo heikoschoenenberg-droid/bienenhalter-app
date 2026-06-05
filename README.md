@@ -15,3 +15,24 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+## Geplantes Modul: Honigbuch
+
+Spaeter soll die App ein Honigbuch pflegen und als Excel-Datei exportieren
+koennen. In dieser Phase ist noch kein Honigbuch-Modul umgesetzt.
+
+Vorgemerkte Felder:
+
+- laufende Nummer
+- Schleuderdatum
+- Schleuderort
+- Honigsorte
+- Wassergehalt in %
+- Menge in kg
+- Abfuelldatum
+- Gewaehrstreifen Nummer von
+- Gewaehrstreifen Nummer bis
+- Losnummer
+- deklariertes Haltbarkeitsdatum
+- Verarbeitung: cremig oder fluessig
+- Bemerkungen
