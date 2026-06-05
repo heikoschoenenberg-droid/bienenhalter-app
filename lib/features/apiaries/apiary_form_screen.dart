@@ -134,7 +134,7 @@ class _ApiaryFormScreenState extends State<ApiaryFormScreen> {
                   icon: const Icon(Icons.save),
                   label: Text(
                     _isEditing
-                        ? 'Aenderungen speichern'
+                        ? 'Änderungen speichern'
                         : 'Bienenstand speichern',
                   ),
                 ),

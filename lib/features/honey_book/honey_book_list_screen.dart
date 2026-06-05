@@ -5,6 +5,7 @@ import '../../core/date_format.dart';
 import '../../core/models/honey_book_entry.dart';
 import '../../core/services/app_data_listener.dart';
 import '../../core/services/app_repositories.dart';
+import '../../core/services/honey_book_export_service.dart';
 
 class HoneyBookListScreen extends StatefulWidget {
   const HoneyBookListScreen({super.key});
@@ -81,23 +82,35 @@ class _HoneyBookListScreenState extends State<HoneyBookListScreen>
             separatorBuilder: (context, index) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
               if (index == 0) {
-                return _HoneyBookFilters(
-                  controller: _searchController,
-                  query: _searchQuery,
-                  resultCount: filteredEntries.length,
-                  years: years,
-                  honeyTypes: honeyTypes,
-                  yearFilter: _yearFilter,
-                  honeyTypeFilter: _honeyTypeFilter,
-                  processingFilter: _processingFilter,
-                  onSearchChanged: (value) =>
-                      setState(() => _searchQuery = value),
-                  onYearChanged: (value) => setState(() => _yearFilter = value),
-                  onHoneyTypeChanged: (value) =>
-                      setState(() => _honeyTypeFilter = value),
-                  onProcessingChanged: (value) =>
-                      setState(() => _processingFilter = value),
-                  onClear: _clearFilters,
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    FilledButton.icon(
+                      onPressed: _exportExcel,
+                      icon: const Icon(Icons.table_chart),
+                      label: const Text('Excel exportieren'),
+                    ),
+                    const SizedBox(height: 12),
+                    _HoneyBookFilters(
+                      controller: _searchController,
+                      query: _searchQuery,
+                      resultCount: filteredEntries.length,
+                      years: years,
+                      honeyTypes: honeyTypes,
+                      yearFilter: _yearFilter,
+                      honeyTypeFilter: _honeyTypeFilter,
+                      processingFilter: _processingFilter,
+                      onSearchChanged: (value) =>
+                          setState(() => _searchQuery = value),
+                      onYearChanged: (value) =>
+                          setState(() => _yearFilter = value),
+                      onHoneyTypeChanged: (value) =>
+                          setState(() => _honeyTypeFilter = value),
+                      onProcessingChanged: (value) =>
+                          setState(() => _processingFilter = value),
+                      onClear: _clearFilters,
+                    ),
+                  ],
                 );
               }
 
@@ -117,6 +130,32 @@ class _HoneyBookListScreenState extends State<HoneyBookListScreen>
     final changed = await Navigator.pushNamed(context, AppRoutes.honeyBookForm);
     if (changed == true && mounted) {
       await _reload();
+    }
+  }
+
+  Future<void> _exportExcel() async {
+    try {
+      final entries = await _loadEntries();
+      final path = await const HoneyBookExportService().exportExcel(entries);
+      if (!mounted) {
+        return;
+      }
+      if (path == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Export wurde abgebrochen.')),
+        );
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Honigbuch wurde exportiert: $path')),
+      );
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Export fehlgeschlagen: $error')));
     }
   }
 

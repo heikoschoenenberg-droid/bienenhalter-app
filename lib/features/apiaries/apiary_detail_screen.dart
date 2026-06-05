@@ -65,7 +65,7 @@ class _ApiaryDetailScreenState extends State<ApiaryDetailScreen>
     if (widget.apiaryId == null) {
       return Scaffold(
         appBar: AppBar(title: const Text('Bienenstand')),
-        body: const Center(child: Text('Kein Bienenstand ausgewaehlt.')),
+        body: const Center(child: Text('Kein Bienenstand ausgewählt.')),
       );
     }
 
@@ -113,7 +113,7 @@ class _ApiaryDetailScreenState extends State<ApiaryDetailScreen>
                         value: data.apiary.location,
                       ),
                       _DetailRow(
-                        label: 'Voelker',
+                        label: 'Völker',
                         value: data.hives.length.toString(),
                       ),
                       if (data.apiary.notes.isNotEmpty)
@@ -130,12 +130,12 @@ class _ApiaryDetailScreenState extends State<ApiaryDetailScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Zugeordnete Voelker',
+                        'Zugeordnete Völker',
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const SizedBox(height: 12),
                       if (data.hives.isEmpty)
-                        const Text('Noch keine Voelker an diesem Stand.')
+                        const Text('Noch keine Völker an diesem Stand.')
                       else
                         for (final hive in data.hives)
                           ListTile(

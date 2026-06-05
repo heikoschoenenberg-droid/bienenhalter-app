@@ -397,7 +397,7 @@ class _InspectionFilters extends StatelessWidget {
             const SizedBox(height: 12),
             _EnumDropdown<_BoolFilter>(
               keyPrefix: 'inspection-queen',
-              label: 'Koenigin gesehen',
+              label: 'Königin gesehen',
               value: queenSeenFilter,
               values: _BoolFilter.values,
               labelFor: _boolLabel,
@@ -550,17 +550,17 @@ class _InspectionHistoryCard extends StatelessWidget {
                   Chip(
                     label: Text(
                       inspection.queenSeen
-                          ? 'Koenigin gesehen'
-                          : 'Koenigin nicht gesehen',
+                          ? 'Königin gesehen'
+                          : 'Königin nicht gesehen',
                     ),
                   ),
-                  Chip(label: Text('Staerke: ${inspection.colonyStrength}/10')),
+                  Chip(label: Text('Stärke: ${inspection.colonyStrength}/10')),
                   Chip(
                     label: Text('Brutrahmen: ${inspection.broodFrameCount}'),
                   ),
                   Chip(
                     label: Text(
-                      'Honigraeume: ${inspection.honeySuperCount}, '
+                      'Honigräume: ${inspection.honeySuperCount}, '
                       '${inspection.honeySuperFillLevel}',
                     ),
                   ),

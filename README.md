@@ -1,44 +1,70 @@
-# bienenhalter_app
+# bienenhalter.net / Bienenhalter-App
 
-A new Flutter project.
+Plattformübergreifende Flutter-App zur Verwaltung von Bienenständen,
+Völkern, Stockkontrollen, Aufgaben, Fotos und Honigbuch-Daten.
 
-## Getting Started
+## Zielplattformen
 
-This project is a starting point for a Flutter application.
+- Android
+- iOS
+- Windows
+- Web
 
-A few resources to get you started if this is your first Flutter project:
+## Aktueller Entwicklungsstand
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+- Dashboard mit Kennzahlen und Branding
+- Bienenstände anlegen, bearbeiten und anzeigen
+- Völker anlegen, bearbeiten und anzeigen
+- Stockkontrollen erfassen, bearbeiten, löschen und durchsuchen
+- Aufgaben anlegen, bearbeiten und erledigen
+- Fotoimport für Stockkarten/Kontrollbelege
+- Fotozuordnung zu Völkern und Kontrollen
+- Lokale Drift/SQLite-Datenhaltung für Windows und später Mobile/Desktop
+- Einfacher Web-Fallback, Web-Persistenz ggf. noch eingeschraenkt
+- Honigbuch-Grundmodul mit Excel-Export
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+KI-/Stockkartenerkennung, QR-Code-Erkennung, Cloud-Synchronisation und Login
+sind für spätere Phasen geplant und derzeit nicht umgesetzt.
 
-## Geplantes Modul: Honigbuch
+## Lokal starten
 
-Die App enthaelt ein erstes Honigbuch-Grundmodul fuer Ernte- und
-Chargendaten. Spaeter soll daraus ein Excel-Export im Format eines
-klassischen Honigbuchs erzeugt werden.
+```powershell
+flutter pub get
+dart run build_runner build --delete-conflicting-outputs
+flutter analyze
+flutter run -d windows
+```
 
-Vorgemerkte Felder:
+Optional vor dem Analyze:
 
-- laufende Nummer
-- Schleuderdatum
-- Schleuderort
-- Honigsorte
-- Wassergehalt in %
-- Menge in kg
-- Abfuelldatum
-- Gewaehrstreifen Nummer von
-- Gewaehrstreifen Nummer bis
-- Losnummer
-- deklariertes Haltbarkeitsdatum
-- Verarbeitung: cremig oder fluessig
-- Bemerkungen
+```powershell
+dart format lib test
+```
 
-TODO Excel-Exportspalten:
+## Branding
+
+Die Logos liegen unter:
+
+- `assets/branding/logo3.png`
+- `assets/branding/favicon.png`
+- `assets/branding/full-logo-bg-white.png`
+
+App-Icons sind per `flutter_launcher_icons` vorbereitet. Generierung lokal:
+
+```powershell
+dart run flutter_launcher_icons
+```
+
+TODO: Ein nativer Splashscreen mit Logo und Honig-/Naturfarbton kann später
+vorbereitet werden. Aktuell wurde dafür bewusst kein weiteres Package
+eingebaut.
+
+## Honigbuch
+
+Das Honigbuch erfasst Ernte- und Chargendaten und kann aktuell als Excel-Datei
+exportiert werden.
+
+Exportspalten:
 
 - lfd. Nr.
 - Schleuderdatum
@@ -46,10 +72,29 @@ TODO Excel-Exportspalten:
 - Honigsorte
 - Wassergehalt in %
 - Menge in kg
-- abgefuellt am
-- Gewaehrstreifen Nr. von
-- Gewaehrstreifen Nr. bis
+- abgefüllt am
+- Gewährstreifen Nr. von
+- Gewährstreifen Nr. bis
 - Losnummer
 - deklariertes Haltbarkeitsdatum
-- Verarbeitung: cremig/fluessig
+- Verarbeitung: cremig/flüssig
 - Bemerkungen
+
+Später können PDF-Export, Zeitraumfilter, Druckansicht und Vorlagenverwaltung
+ergänzt werden.
+
+## CI
+
+Eine einfache GitHub-Actions-CI liegt unter:
+
+- `.github/workflows/flutter-ci.yml`
+
+Sie prueft:
+
+- `flutter pub get`
+- Drift-Codegenerierung
+- Formatierung
+- `flutter analyze`
+
+`flutter test` ist vorerst als TODO auskommentiert, weil Tests lokal teilweise
+haengen.

@@ -4,7 +4,7 @@ extension HoneyProcessingTypeLabel on HoneyProcessingType {
   String get label {
     return switch (this) {
       HoneyProcessingType.creamy => 'cremig',
-      HoneyProcessingType.liquid => 'fluessig',
+      HoneyProcessingType.liquid => 'flüssig',
     };
   }
 }

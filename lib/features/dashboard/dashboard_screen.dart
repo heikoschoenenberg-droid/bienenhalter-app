@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app/app_routes.dart';
+import '../../app/app_strings.dart';
 import '../../core/date_format.dart';
 import '../../core/models/beekeeper_task.dart';
 import '../../core/models/hive.dart';
@@ -45,7 +46,20 @@ class _DashboardScreenState extends State<DashboardScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Bienenhalter-App')),
+      appBar: AppBar(
+        leading: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Image.asset(
+            'assets/branding/favicon.png',
+            width: 28,
+            height: 28,
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) =>
+                const Icon(Icons.hive_outlined),
+          ),
+        ),
+        title: const Text('bienenhalter.net'),
+      ),
       body: FutureBuilder<_DashboardData>(
         future: _future,
         builder: (context, snapshot) {
@@ -57,20 +71,12 @@ class _DashboardScreenState extends State<DashboardScreen>
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              Text(
-                'Dashboard',
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Dein Ueberblick fuer die naechsten Kontrollen.',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
+              const _DashboardHeader(),
               const SizedBox(height: 24),
               _MetricGrid(
                 children: [
                   _MetricCard(
-                    title: 'Aktive Voelker',
+                    title: 'Aktive Völker',
                     value: data.activeHives.toString(),
                     icon: Icons.hive_outlined,
                   ),
@@ -109,34 +115,34 @@ class _DashboardScreenState extends State<DashboardScreen>
                 ),
               ),
               const SizedBox(height: 24),
-              FilledButton.icon(
+              OutlinedButton.icon(
                 onPressed: () => _openAndReload(AppRoutes.hives),
                 icon: const Icon(Icons.list_alt),
-                label: const Text('Voelker ansehen'),
+                label: const Text(AppStrings.hivesView),
               ),
               const SizedBox(height: 12),
               OutlinedButton.icon(
                 onPressed: () => _openAndReload(AppRoutes.apiaries),
                 icon: const Icon(Icons.location_on_outlined),
-                label: const Text('Bienenstaende'),
+                label: const Text(AppStrings.apiaries),
               ),
               const SizedBox(height: 12),
               OutlinedButton.icon(
                 onPressed: () => _openAndReload(AppRoutes.tasks),
                 icon: const Icon(Icons.checklist),
-                label: const Text('Aufgaben oeffnen'),
+                label: const Text(AppStrings.openTasks),
               ),
               const SizedBox(height: 12),
               OutlinedButton.icon(
                 onPressed: () => _openAndReload(AppRoutes.stockCardImport),
                 icon: const Icon(Icons.photo_library_outlined),
-                label: const Text('Stockkarten auswerten'),
+                label: const Text(AppStrings.stockCards),
               ),
               const SizedBox(height: 12),
               OutlinedButton.icon(
                 onPressed: () => _openAndReload(AppRoutes.honeyBook),
                 icon: const Icon(Icons.inventory_2_outlined),
-                label: const Text('Honigbuch'),
+                label: const Text(AppStrings.honeyBook),
               ),
             ],
           );
@@ -172,6 +178,33 @@ class _DashboardScreenState extends State<DashboardScreen>
           .length,
       latestInspection: latestInspection,
       latestHive: latestHive,
+    );
+  }
+}
+
+class _DashboardHeader extends StatelessWidget {
+  const _DashboardHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              AppStrings.dashboardTitle,
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              AppStrings.dashboardSubtitle,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

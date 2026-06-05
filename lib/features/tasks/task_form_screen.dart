@@ -134,7 +134,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                               ),
                           ],
                           validator: (value) => value == null
-                              ? 'Bitte ein Volk auswaehlen.'
+                              ? 'Bitte ein Volk auswählen.'
                               : null,
                           onChanged: (value) {
                             setState(() => _selectedHiveId = value);
@@ -185,13 +185,13 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
                     const SizedBox(height: 12),
                     _PickerTile(
                       icon: Icons.calendar_month,
-                      label: 'Faelligkeitsdatum',
+                      label: 'Fälligkeitsdatum',
                       value: formatDate(_dueDate),
                       onTap: _pickDueDate,
                     ),
                     _PickerTile(
                       icon: Icons.schedule,
-                      label: 'Faelligkeitszeit',
+                      label: 'Fälligkeitszeit',
                       value: _dueTime == null
                           ? 'Keine Uhrzeit'
                           : _dueTime!.format(context),
@@ -215,7 +215,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
               onPressed: _saveTask,
               icon: const Icon(Icons.save),
               label: Text(
-                _isEditing ? 'Aenderungen speichern' : 'Aufgabe speichern',
+                _isEditing ? 'Änderungen speichern' : 'Aufgabe speichern',
               ),
             ),
           ],
@@ -336,8 +336,8 @@ extension on BeekeeperTaskCategory {
       BeekeeperTaskCategory.honeySuper => 'Honigraum',
       BeekeeperTaskCategory.beeEscape => 'Bienenflucht',
       BeekeeperTaskCategory.varroa => 'Varroa',
-      BeekeeperTaskCategory.feeding => 'Fuetterung',
-      BeekeeperTaskCategory.queen => 'Koenigin',
+      BeekeeperTaskCategory.feeding => 'Fütterung',
+      BeekeeperTaskCategory.queen => 'Königin',
       BeekeeperTaskCategory.other => 'Sonstiges',
     };
   }

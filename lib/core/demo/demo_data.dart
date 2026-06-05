@@ -68,7 +68,7 @@ class DemoData {
       queenColor: 'Weiss',
       queenOrigin: 'Ableger',
       status: HiveStatus.active,
-      notes: 'Junge Koenigin in Eiablage.',
+      notes: 'Junge Königin in Eiablage.',
       createdAt: DateTime(2026, 3, 12),
       updatedAt: DateTime(2026, 6, 1),
       lastInspectionDate: DateTime(2026, 6, 1, 16, 10),
@@ -197,7 +197,7 @@ class DemoData {
       feedingDone: false,
       feedType: 'kein Futter',
       feedAmount: null,
-      notes: 'Junge Koenigin in Eiablage.',
+      notes: 'Junge Königin in Eiablage.',
     ),
     Inspection(
       id: 'inspection-4',
@@ -266,7 +266,7 @@ class DemoData {
   static final List<BeekeeperTask> tasks = [
     BeekeeperTask(
       id: 'task-1',
-      title: 'Volk 2 erneut auf Schwarmzellen pruefen',
+      title: 'Volk 2 erneut auf Schwarmzellen prüfen',
       description: 'Nach der letzten Kontrolle zeitnah nachsehen.',
       hiveId: 'hive-2',
       category: BeekeeperTaskCategory.inspection,
@@ -280,7 +280,7 @@ class DemoData {
     BeekeeperTask(
       id: 'task-2',
       title: 'Futtervorrat bei Ableger 1 kontrollieren',
-      description: 'Ableger ist noch schwach, Reserve pruefen.',
+      description: 'Ableger ist noch schwach, Reserve prüfen.',
       hiveId: 'hive-4',
       category: BeekeeperTaskCategory.feeding,
       dueDate: DateTime(2026, 6, 8),
@@ -305,7 +305,7 @@ class DemoData {
     ),
     BeekeeperTask(
       id: 'task-4',
-      title: 'Bienenflucht bei Volk 1 pruefen',
+      title: 'Bienenflucht bei Volk 1 prüfen',
       description: 'Vor der Honigernte vorbereiten.',
       hiveId: 'hive-1',
       category: BeekeeperTaskCategory.beeEscape,
@@ -318,7 +318,7 @@ class DemoData {
     ),
     BeekeeperTask(
       id: 'task-5',
-      title: 'Varroa-Plan fuer Volk 3 vorbereiten',
+      title: 'Varroa-Plan für Volk 3 vorbereiten',
       description: 'Behandlung nach Trachtende planen.',
       hiveId: 'hive-3',
       category: BeekeeperTaskCategory.varroa,
@@ -331,7 +331,7 @@ class DemoData {
     ),
     BeekeeperTask(
       id: 'task-6',
-      title: 'Koeniginnenzeichnung bei Ableger 1 nachtragen',
+      title: 'Königinnenzeichnung bei Ableger 1 nachtragen',
       description: 'Farbe und Jahr im Volk nachtragen.',
       hiveId: 'hive-4',
       category: BeekeeperTaskCategory.queen,
@@ -426,7 +426,7 @@ class DemoData {
 
     if (latestInspection == null ||
         today.difference(latestInspection.date).inDays >= 7) {
-      warnings.add('Kontrolle faellig');
+      warnings.add('Kontrolle fällig');
     }
 
     for (final task in openTasksForHive(hiveId)) {

@@ -75,20 +75,20 @@ class BeekeeperTask {
       BeekeeperTaskCategory.honeySuper => 'Honigraum',
       BeekeeperTaskCategory.beeEscape => 'Bienenflucht',
       BeekeeperTaskCategory.varroa => 'Varroa',
-      BeekeeperTaskCategory.feeding => 'Fuetterung',
-      BeekeeperTaskCategory.queen => 'Koenigin',
+      BeekeeperTaskCategory.feeding => 'Fütterung',
+      BeekeeperTaskCategory.queen => 'Königin',
       BeekeeperTaskCategory.other => 'Sonstiges',
     };
   }
 
   String get warningLabel {
     return switch (category) {
-      BeekeeperTaskCategory.inspection => 'Kontrolle faellig',
-      BeekeeperTaskCategory.honeySuper => 'Honigraum pruefen',
-      BeekeeperTaskCategory.beeEscape => 'Bienenflucht pruefen',
+      BeekeeperTaskCategory.inspection => 'Kontrolle fällig',
+      BeekeeperTaskCategory.honeySuper => 'Honigraum prüfen',
+      BeekeeperTaskCategory.beeEscape => 'Bienenflucht prüfen',
       BeekeeperTaskCategory.varroa => 'Varroa offen',
-      BeekeeperTaskCategory.feeding => 'Fuetterung pruefen',
-      BeekeeperTaskCategory.queen => 'Koenigin pruefen',
+      BeekeeperTaskCategory.feeding => 'Fütterung prüfen',
+      BeekeeperTaskCategory.queen => 'Königin prüfen',
       BeekeeperTaskCategory.other => 'Aufgabe offen',
     };
   }

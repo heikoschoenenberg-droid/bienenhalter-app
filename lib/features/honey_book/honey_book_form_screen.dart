@@ -176,12 +176,12 @@ class _HoneyBookFormScreenState extends State<HoneyBookFormScreen> {
                     ),
                     _TextField(
                       controller: _labelFromController,
-                      label: 'Gewaehrstreifen Nr. von',
+                      label: 'Gewährstreifen Nr. von',
                       validator: (_) => _validateLabelRange(),
                     ),
                     _TextField(
                       controller: _labelToController,
-                      label: 'Gewaehrstreifen Nr. bis',
+                      label: 'Gewährstreifen Nr. bis',
                       validator: (_) => _validateLabelRange(),
                     ),
                     _TextField(

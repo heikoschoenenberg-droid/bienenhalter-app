@@ -61,7 +61,7 @@ class _ApiaryListScreenState extends State<ApiaryListScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Bienenstaende')),
+      appBar: AppBar(title: const Text('Bienenstände')),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openCreateApiary,
         icon: const Icon(Icons.add),
@@ -103,9 +103,7 @@ class _ApiaryListScreenState extends State<ApiaryListScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(apiary.location),
-                        Text(
-                          '${data.hivesForApiary(apiary.id).length} Voelker',
-                        ),
+                        Text('${data.hivesForApiary(apiary.id).length} Völker'),
                         if (apiary.notes.isNotEmpty) Text(apiary.notes),
                       ],
                     ),
@@ -187,7 +185,7 @@ class _ApiarySearch extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    'Bienenstaende suchen',
+                    'Bienenstände suchen',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),

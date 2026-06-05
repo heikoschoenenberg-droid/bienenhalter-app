@@ -157,10 +157,8 @@ class _HiveDetailScreenState extends State<HiveDetailScreen>
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Kontrolle loeschen?'),
-          content: const Text(
-            'Moechtest du diese Kontrolle wirklich loeschen?',
-          ),
+          title: const Text('Kontrolle löschen?'),
+          content: const Text('Möchtest du diese Kontrolle wirklich löschen?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
@@ -189,7 +187,7 @@ class _HiveDetailScreenState extends State<HiveDetailScreen>
     }
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Kontrolle wurde geloescht.')));
+    ).showSnackBar(const SnackBar(content: Text('Kontrolle wurde gelöscht.')));
     await _reload();
   }
 
@@ -288,10 +286,13 @@ class _HiveDetailScreenState extends State<HiveDetailScreen>
                   _DetailRow(label: 'Standort', value: data.beeStand.location),
                   _DetailRow(label: 'Beutentyp', value: hive.hiveType),
                   _DetailRow(
-                    label: 'Koeniginnenjahr',
+                    label: 'Königinnenjahr',
                     value: hive.queenYear.toString(),
                   ),
-                  _DetailRow(label: 'Koeniginnenfarbe', value: hive.queenColor),
+                  _DetailRow(
+                    label: 'Königinnenfarbe',
+                    value: _queenColorLabel(hive.queenColor),
+                  ),
                   _DetailRow(label: 'Herkunft', value: hive.queenOrigin),
                   _DetailRow(label: 'Status', value: hive.statusLabel),
                   if (hive.notes.isNotEmpty)
@@ -355,7 +356,7 @@ class _HiveDetailScreenState extends State<HiveDetailScreen>
                         ),
                         title: Text(task.title),
                         subtitle: Text(
-                          '${task.categoryLabel} - faellig am '
+                          '${task.categoryLabel} - fällig am '
                           '${formatDueDate(task.dueDate, task.dueTime)}',
                         ),
                         trailing: const Icon(Icons.edit),
@@ -450,7 +451,7 @@ class _ActionGrid extends StatelessWidget {
             OutlinedButton.icon(
               onPressed: onOpenLatestInspection,
               icon: const Icon(Icons.open_in_new),
-              label: const Text('Letzte Kontrolle oeffnen'),
+              label: const Text('Letzte Kontrolle öffnen'),
             ),
         ];
 
@@ -536,8 +537,8 @@ class _HiveHeader extends StatelessWidget {
                   runSpacing: 8,
                   children: [
                     Chip(label: Text(hive.statusLabel)),
-                    Chip(label: Text('Koenigin ${hive.queenYear}')),
-                    Chip(label: Text(hive.queenColor)),
+                    Chip(label: Text('Königin ${hive.queenYear}')),
+                    Chip(label: Text(_queenColorLabel(hive.queenColor))),
                   ],
                 ),
               ],
@@ -649,14 +650,14 @@ class _InspectionSummary extends StatelessWidget {
               onPressed: onDelete,
               icon: const Icon(Icons.delete_outline),
               color: colorScheme.error,
-              tooltip: 'Kontrolle loeschen',
+              tooltip: 'Kontrolle löschen',
             ),
           ],
         ),
         const SizedBox(height: 8),
         _DetailRow(label: 'Gemutszustand', value: inspection.mood),
         _DetailRow(
-          label: 'Koenigin gesehen',
+          label: 'Königin gesehen',
           value: inspection.queenSeen ? 'Ja' : 'Nein',
         ),
         _DetailRow(label: 'Wabensitz', value: inspection.combPosition),
@@ -679,7 +680,7 @@ class _InspectionSummary extends StatelessWidget {
               ? inspection.varroaTreatment
               : 'nicht durchgefuehrt',
         ),
-        _DetailRow(label: 'Auffaelligkeiten', value: _findingsText(inspection)),
+        _DetailRow(label: 'Auffälligkeiten', value: _findingsText(inspection)),
         _DetailRow(label: 'Notizen', value: inspection.notes),
         if (photos.isNotEmpty) ...[
           const SizedBox(height: 12),
@@ -759,6 +760,14 @@ class _DetailRow extends StatelessWidget {
   }
 }
 
+String _queenColorLabel(String value) {
+  return switch (value) {
+    'Weiss' => 'Weiß',
+    'Gruen' => 'Grün',
+    _ => value,
+  };
+}
+
 class _PhotoAttachmentList extends StatelessWidget {
   const _PhotoAttachmentList({required this.photos});
 
@@ -796,7 +805,7 @@ class _MissingHiveScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Volk nicht gefunden')),
       body: const Center(
-        child: Text('Fuer diese Ansicht wurde kein Volk ausgewaehlt.'),
+        child: Text('Für diese Ansicht wurde kein Volk ausgewählt.'),
       ),
     );
   }

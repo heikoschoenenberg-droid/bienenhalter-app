@@ -155,7 +155,7 @@ Future<void> showPhotoPreviewDialog({
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Schliessen'),
+            child: const Text('Schließen'),
           ),
         ],
       );

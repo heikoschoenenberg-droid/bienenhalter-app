@@ -4,7 +4,7 @@ extension HiveStatusLabel on HiveStatus {
   String get label {
     return switch (this) {
       HiveStatus.active => 'Aktiv',
-      HiveStatus.dissolved => 'Aufgeloest',
+      HiveStatus.dissolved => 'Aufgelöst',
       HiveStatus.united => 'Vereinigt',
       HiveStatus.sold => 'Verkauft',
       HiveStatus.lost => 'Verstorben / verloren',

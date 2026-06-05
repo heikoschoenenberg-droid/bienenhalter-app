@@ -68,8 +68,8 @@ class _StockCardImportScreenState extends State<StockCardImportScreen> {
                   ),
                   const SizedBox(height: 12),
                   const Text(
-                    'Waehle Fotos deiner Stockkarten aus. Die automatische '
-                    'Auswertung wird spaeter ergaenzt. Aktuell kannst du '
+                    'Wähle Fotos deiner Stockkarten aus. Die automatische '
+                    'Auswertung wird später ergänzt. Aktuell kannst du '
                     'Bilder sammeln, einem Volk zuordnen und als '
                     'Kontrollvorschlag vorbereiten.',
                   ),
@@ -77,7 +77,7 @@ class _StockCardImportScreenState extends State<StockCardImportScreen> {
                   FilledButton.icon(
                     onPressed: _pickPhotos,
                     icon: const Icon(Icons.add_photo_alternate_outlined),
-                    label: const Text('Fotos auswaehlen'),
+                    label: const Text('Fotos auswählen'),
                   ),
                   const SizedBox(height: 20),
                   Text(
@@ -124,14 +124,14 @@ class _StockCardImportScreenState extends State<StockCardImportScreen> {
           content: Text(
             hiveId == null
                 ? 'Bitte zuerst ein Volk zuordnen.'
-                : 'Die automatische Erkennung wird spaeter ergaenzt. Fuer '
+                : 'Die automatische Erkennung wird später ergänzt. Für '
                       'dieses Foto kann aktuell ein manueller '
                       'Kontrollentwurf erstellt werden.',
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Schliessen'),
+              child: const Text('Schließen'),
             ),
             if (hiveId != null)
               FilledButton(
@@ -146,7 +146,7 @@ class _StockCardImportScreenState extends State<StockCardImportScreen> {
                     ),
                   );
                 },
-                child: const Text('Manuelle Kontrolle oeffnen'),
+                child: const Text('Manuelle Kontrolle öffnen'),
               ),
           ],
         );

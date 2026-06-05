@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/app_colors.dart';
 import '../../app/app_routes.dart';
 import '../../core/date_format.dart';
 import '../../core/models/bee_stand.dart';
@@ -55,7 +56,7 @@ class _HiveListScreenState extends State<HiveListScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Voelker')),
+      appBar: AppBar(title: const Text('Völker')),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openCreateHive,
         icon: const Icon(Icons.add),
@@ -297,12 +298,26 @@ class _HiveFilters extends StatelessWidget {
                 FilterChip(
                   label: const Text('Alle'),
                   selected: statusFilter == null,
+                  selectedColor: AppColors.goldText,
+                  checkmarkColor: Colors.white,
+                  labelStyle: TextStyle(
+                    color: statusFilter == null
+                        ? Colors.white
+                        : AppColors.anthracite,
+                  ),
                   onSelected: (_) => onStatusChanged(null),
                 ),
                 for (final status in HiveStatus.values)
                   FilterChip(
                     label: Text(status.label),
                     selected: statusFilter == status,
+                    selectedColor: AppColors.goldText,
+                    checkmarkColor: Colors.white,
+                    labelStyle: TextStyle(
+                      color: statusFilter == status
+                          ? Colors.white
+                          : AppColors.anthracite,
+                    ),
                     onSelected: (_) => onStatusChanged(status),
                   ),
               ],
@@ -349,7 +364,11 @@ class _HiveCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  CircleAvatar(child: Text(_shortHiveNumber(hive.number))),
+                  CircleAvatar(
+                    backgroundColor: AppColors.goldText,
+                    foregroundColor: Colors.white,
+                    child: Text(_shortHiveNumber(hive.number)),
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -373,11 +392,11 @@ class _HiveCard extends StatelessWidget {
                 children: [
                   _InfoChip(
                     icon: Icons.calendar_month,
-                    label: 'Koenigin ${hive.queenYear}',
+                    label: 'Königin ${hive.queenYear}',
                   ),
                   _InfoChip(
                     icon: Icons.palette_outlined,
-                    label: hive.queenColor,
+                    label: _queenColorLabel(hive.queenColor),
                   ),
                   _InfoChip(
                     icon: Icons.fact_check_outlined,
@@ -393,11 +412,15 @@ class _HiveCard extends StatelessWidget {
                   children: [
                     for (final warning in warnings)
                       Chip(
-                        avatar: const Icon(Icons.warning_amber, size: 18),
+                        avatar: const Icon(
+                          Icons.warning_amber,
+                          size: 18,
+                          color: Colors.white,
+                        ),
                         label: Text(warning),
-                        backgroundColor: Theme.of(
-                          context,
-                        ).colorScheme.errorContainer,
+                        backgroundColor: AppColors.warningRed,
+                        labelStyle: const TextStyle(color: Colors.white),
+                        side: BorderSide.none,
                       ),
                   ],
                 ),
@@ -415,7 +438,7 @@ class _HiveCard extends StatelessWidget {
     final latest = hive.lastInspectionDate;
 
     if (latest == null || today.difference(latest).inDays >= 7) {
-      warnings.add('Kontrolle faellig');
+      warnings.add('Kontrolle fällig');
     }
     for (final task in tasks) {
       if (!task.dueDate.isAfter(today.add(const Duration(days: 7)))) {
@@ -428,6 +451,14 @@ class _HiveCard extends StatelessWidget {
   String _shortHiveNumber(String number) {
     return number.replaceAll('Volk ', '').replaceAll('Ableger ', 'A');
   }
+
+  String _queenColorLabel(String value) {
+    return switch (value) {
+      'Weiss' => 'Weiß',
+      'Gruen' => 'Grün',
+      _ => value,
+    };
+  }
 }
 
 class _StatusPill extends StatelessWidget {
@@ -437,19 +468,24 @@ class _StatusPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final color = switch (status) {
-      HiveStatus.active => colorScheme.primaryContainer,
-      HiveStatus.dissolved => colorScheme.surfaceContainerHighest,
-      HiveStatus.united => colorScheme.secondaryContainer,
-      HiveStatus.sold => colorScheme.tertiaryContainer,
-      HiveStatus.lost => colorScheme.errorContainer,
+      HiveStatus.active => AppColors.sageGreen,
+      HiveStatus.dissolved => const Color(0xFFE2E0D4),
+      HiveStatus.united => AppColors.goldText,
+      HiveStatus.sold => AppColors.darkGold,
+      HiveStatus.lost => AppColors.warningRed,
+    };
+    final textColor = switch (status) {
+      HiveStatus.dissolved => AppColors.anthracite,
+      _ => Colors.white,
     };
 
     return Chip(
       label: Text(status.label),
       backgroundColor: color,
+      labelStyle: TextStyle(color: textColor),
       visualDensity: VisualDensity.compact,
+      side: BorderSide.none,
     );
   }
 }
@@ -465,7 +501,7 @@ class _InfoChip extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 18, color: Theme.of(context).colorScheme.primary),
+        Icon(icon, size: 18, color: AppColors.goldText),
         const SizedBox(width: 6),
         Text(label),
       ],

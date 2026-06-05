@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/app_colors.dart';
 import '../../app/app_routes.dart';
 import '../../core/date_format.dart';
 import '../../core/models/beekeeper_task.dart';
@@ -91,7 +92,7 @@ class _TaskListScreenState extends State<TaskListScreen>
               ),
               const SizedBox(height: 8),
               const Text(
-                'Offene Aufgaben stehen oben und sind nach Faelligkeit sortiert.',
+                'Offene Aufgaben stehen oben und sind nach Fälligkeit sortiert.',
               ),
               const SizedBox(height: 20),
               _TaskFilters(
@@ -245,7 +246,7 @@ class _TaskListScreenState extends State<TaskListScreen>
     final daysUntilDue = dueDate.difference(currentDay).inDays;
 
     if (daysUntilDue < 0) {
-      return 'Ueberfaellig';
+      return 'Überfällig';
     }
     if (daysUntilDue == 0) {
       return 'Heute';
@@ -414,7 +415,7 @@ class _TaskFilters extends StatelessWidget {
               key: ValueKey('task-due-$dueFilter'),
               initialValue: dueFilter,
               decoration: const InputDecoration(
-                labelText: 'Faelligkeit',
+                labelText: 'Fälligkeit',
                 border: OutlineInputBorder(),
               ),
               items: const [
@@ -428,7 +429,7 @@ class _TaskFilters extends StatelessWidget {
                 ),
                 DropdownMenuItem(
                   value: _TaskDueFilter.overdue,
-                  child: Text('Ueberfaellig'),
+                  child: Text('Überfällig'),
                 ),
                 DropdownMenuItem(
                   value: _TaskDueFilter.thisWeek,
@@ -494,7 +495,7 @@ class _TaskCard extends StatelessWidget {
           ).textTheme.bodyMedium?.copyWith(color: colorScheme.outline);
 
     return Card(
-      color: isOverdue ? colorScheme.errorContainer : null,
+      color: isOverdue ? AppColors.warningBackground : null,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
@@ -539,8 +540,15 @@ class _TaskCard extends StatelessWidget {
                       ),
                       if (isOverdue)
                         const Chip(
-                          avatar: Icon(Icons.warning_amber, size: 18),
-                          label: Text('Ueberfaellig'),
+                          avatar: Icon(
+                            Icons.warning_amber,
+                            size: 18,
+                            color: Colors.white,
+                          ),
+                          label: Text('Überfällig'),
+                          backgroundColor: AppColors.warningRed,
+                          labelStyle: TextStyle(color: Colors.white),
+                          side: BorderSide.none,
                         ),
                       if (!task.isOpen && task.completedAt != null)
                         Chip(
@@ -588,8 +596,8 @@ extension _TaskCategoryLabel on BeekeeperTaskCategory {
       BeekeeperTaskCategory.honeySuper => 'Honigraum',
       BeekeeperTaskCategory.beeEscape => 'Bienenflucht',
       BeekeeperTaskCategory.varroa => 'Varroa',
-      BeekeeperTaskCategory.feeding => 'Fuetterung',
-      BeekeeperTaskCategory.queen => 'Koenigin',
+      BeekeeperTaskCategory.feeding => 'Fütterung',
+      BeekeeperTaskCategory.queen => 'Königin',
       BeekeeperTaskCategory.other => 'Sonstiges',
     };
   }

@@ -75,7 +75,7 @@ class _InspectionDetailScreenState extends State<InspectionDetailScreen>
     if (widget.inspectionId == null) {
       return Scaffold(
         appBar: AppBar(title: const Text('Kontrolle')),
-        body: const Center(child: Text('Keine Kontrolle ausgewaehlt.')),
+        body: const Center(child: Text('Keine Kontrolle ausgewählt.')),
       );
     }
 
@@ -118,14 +118,14 @@ class _InspectionDetailScreenState extends State<InspectionDetailScreen>
                   ),
                   _DetailRow(label: 'Volk', value: data.hive.number),
                   _DetailRow(label: 'Bienenstand', value: data.apiary.name),
-                  _DetailRow(label: 'Gemuetszustand', value: inspection.mood),
+                  _DetailRow(label: 'Gemütszustand', value: inspection.mood),
                 ],
               ),
               _SectionCard(
-                title: 'Koenigin und Brut',
+                title: 'Königin und Brut',
                 children: [
                   _DetailRow(
-                    label: 'Koenigin gesehen',
+                    label: 'Königin gesehen',
                     value: _yesNo(inspection.queenSeen),
                   ),
                   _DetailRow(
@@ -153,8 +153,8 @@ class _InspectionDetailScreenState extends State<InspectionDetailScreen>
                     value: inspection.broodFrameCount.toString(),
                   ),
                   _DetailRow(
-                    label: 'Koeniginnenfarbe',
-                    value: inspection.queenColor,
+                    label: 'Königinnenfarbe',
+                    value: _queenColorLabel(inspection.queenColor),
                   ),
                 ],
               ),
@@ -162,7 +162,7 @@ class _InspectionDetailScreenState extends State<InspectionDetailScreen>
                 title: 'Drohnenrahmen',
                 children: [
                   _DetailRow(
-                    label: 'Fuellgrad',
+                    label: 'Füllgrad',
                     value: inspection.droneFrameFillLevel,
                   ),
                   _DetailRow(
@@ -187,7 +187,7 @@ class _InspectionDetailScreenState extends State<InspectionDetailScreen>
                     value: inspection.feedStatus,
                   ),
                   _DetailRow(
-                    label: 'Fuetterung',
+                    label: 'Fütterung',
                     value: _yesNo(inspection.feedingDone),
                   ),
                   _DetailRow(label: 'Futterart', value: inspection.feedType),
@@ -205,11 +205,11 @@ class _InspectionDetailScreenState extends State<InspectionDetailScreen>
                     value: _yesNo(inspection.queenExcluderInserted),
                   ),
                   _DetailRow(
-                    label: 'Honigraeume',
+                    label: 'Honigräume',
                     value: inspection.honeySuperCount.toString(),
                   ),
                   _DetailRow(
-                    label: 'Fuellstand',
+                    label: 'Füllstand',
                     value: inspection.honeySuperFillLevel,
                   ),
                   _DetailRow(
@@ -287,7 +287,7 @@ class _InspectionDetailScreenState extends State<InspectionDetailScreen>
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Kontrolle loeschen?'),
+          title: const Text('Kontrolle löschen?'),
           content: const Text(
             'Diese Kontrolle wird dauerhaft aus der lokalen Datenbank entfernt.',
           ),
@@ -316,7 +316,7 @@ class _InspectionDetailScreenState extends State<InspectionDetailScreen>
     }
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Kontrolle wurde geloescht.')));
+    ).showSnackBar(const SnackBar(content: Text('Kontrolle wurde gelöscht.')));
     Navigator.pop(context, true);
   }
 
@@ -433,6 +433,14 @@ class _DetailRow extends StatelessWidget {
       ),
     );
   }
+}
+
+String _queenColorLabel(String value) {
+  return switch (value) {
+    'Weiss' => 'Weiß',
+    'Gruen' => 'Grün',
+    _ => value,
+  };
 }
 
 class _PhotoAttachmentList extends StatelessWidget {

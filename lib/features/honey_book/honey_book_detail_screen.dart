@@ -58,7 +58,7 @@ class _HoneyBookDetailScreenState extends State<HoneyBookDetailScreen>
     if (widget.entryId == null) {
       return Scaffold(
         appBar: AppBar(title: const Text('Honigbuch')),
-        body: const Center(child: Text('Kein Honigbuch-Eintrag ausgewaehlt.')),
+        body: const Center(child: Text('Kein Honigbuch-Eintrag ausgewählt.')),
       );
     }
 
@@ -120,17 +120,17 @@ class _HoneyBookDetailScreenState extends State<HoneyBookDetailScreen>
                     value: '${entry.amountKg.toStringAsFixed(1)} kg',
                   ),
                   _DetailRow(
-                    label: 'abgefuellt am',
+                    label: 'abgefüllt am',
                     value: entry.bottledAt == null
                         ? '-'
                         : formatDate(entry.bottledAt),
                   ),
                   _DetailRow(
-                    label: 'Gewaehrstreifen von',
+                    label: 'Gewährstreifen von',
                     value: entry.labelNumberFrom,
                   ),
                   _DetailRow(
-                    label: 'Gewaehrstreifen bis',
+                    label: 'Gewährstreifen bis',
                     value: entry.labelNumberTo,
                   ),
                   _DetailRow(label: 'Losnummer', value: entry.batchNumber),
@@ -179,9 +179,9 @@ class _HoneyBookDetailScreenState extends State<HoneyBookDetailScreen>
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Honigbuch-Eintrag loeschen?'),
+          title: const Text('Honigbuch-Eintrag löschen?'),
           content: const Text(
-            'Moechtest du diesen Honigbuch-Eintrag wirklich loeschen?',
+            'Möchtest du diesen Honigbuch-Eintrag wirklich löschen?',
           ),
           actions: [
             TextButton(
@@ -211,7 +211,7 @@ class _HoneyBookDetailScreenState extends State<HoneyBookDetailScreen>
       return;
     }
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Honigbuch-Eintrag wurde geloescht.')),
+      const SnackBar(content: Text('Honigbuch-Eintrag wurde gelöscht.')),
     );
     Navigator.pop(context, true);
   }

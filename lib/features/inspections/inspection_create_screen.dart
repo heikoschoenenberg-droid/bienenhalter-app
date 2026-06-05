@@ -230,7 +230,7 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
                           ),
                       ],
                       validator: (value) =>
-                          value == null ? 'Bitte ein Volk auswaehlen.' : null,
+                          value == null ? 'Bitte ein Volk auswählen.' : null,
                       onChanged: (value) =>
                           setState(() => _selectedHiveId = value),
                     );
@@ -251,7 +251,7 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
                 ),
                 const SizedBox(height: 12),
                 _DropdownField(
-                  label: 'Gemuetszustand',
+                  label: 'Gemütszustand',
                   value: _mood,
                   values: const ['ruhig', 'nervoes', 'aggressiv', 'traege'],
                   onChanged: (value) => setState(() => _mood = value),
@@ -259,10 +259,10 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
               ],
             ),
             _SectionCard(
-              title: 'Koenigin und Brut',
+              title: 'Königin und Brut',
               children: [
                 _SwitchField(
-                  title: 'Koenigin gesehen',
+                  title: 'Königin gesehen',
                   value: _queenSeen,
                   onChanged: (value) => setState(() => _queenSeen = value),
                 ),
@@ -299,7 +299,7 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
                   validator: _validateNonNegativeInt,
                 ),
                 _DropdownField(
-                  label: 'Koeniginnenfarbe',
+                  label: 'Königinnenfarbe',
                   value: _queenColor,
                   values: const ['Weiss', 'Gelb', 'Rot', 'Gruen', 'Blau'],
                   onChanged: (value) => setState(() => _queenColor = value),
@@ -310,7 +310,7 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
               title: 'Drohnenrahmen',
               children: [
                 _DropdownField(
-                  label: 'Drohnenrahmen-Fuellgrad',
+                  label: 'Drohnenrahmen-Füllgrad',
                   value: _droneFrameFillLevel,
                   values: const ['leer', 'angelegt', 'halb gefuellt', 'voll'],
                   onChanged: (value) =>
@@ -350,7 +350,7 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
                   onChanged: (value) => setState(() => _feedStatus = value),
                 ),
                 _SwitchField(
-                  title: 'Fuetterung durchgefuehrt',
+                  title: 'Fütterung durchgeführt',
                   value: _feedingDone,
                   onChanged: (value) => setState(() => _feedingDone = value),
                 ),
@@ -383,11 +383,11 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
                 ),
                 _NumberField(
                   controller: _honeySupersController,
-                  label: 'Anzahl Honigraeume',
+                  label: 'Anzahl Honigräume',
                   validator: _validateNonNegativeInt,
                 ),
                 _DropdownField(
-                  label: 'Fuellstand Honigraeume',
+                  label: 'Füllstand Honigräume',
                   value: _honeySuperFillLevel,
                   values: const [
                     'leer',
@@ -484,7 +484,7 @@ class _InspectionCreateScreenState extends State<InspectionCreateScreen> {
               onPressed: _saveInspection,
               icon: const Icon(Icons.save),
               label: Text(
-                _isEditing ? 'Aenderungen speichern' : 'Kontrolle speichern',
+                _isEditing ? 'Änderungen speichern' : 'Kontrolle speichern',
               ),
             ),
           ],
@@ -855,7 +855,7 @@ class _DropdownField extends StatelessWidget {
         ),
         items: [
           for (final item in values)
-            DropdownMenuItem(value: item, child: Text(item)),
+            DropdownMenuItem(value: item, child: Text(_displayValue(item))),
         ],
         onChanged: (value) {
           if (value != null) {
@@ -864,6 +864,14 @@ class _DropdownField extends StatelessWidget {
         },
       ),
     );
+  }
+
+  String _displayValue(String value) {
+    return switch (value) {
+      'Weiss' => 'Weiß',
+      'Gruen' => 'Grün',
+      _ => value,
+    };
   }
 }
 

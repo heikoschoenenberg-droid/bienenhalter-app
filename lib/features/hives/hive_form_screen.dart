@@ -145,7 +145,7 @@ class _HiveFormScreenState extends State<HiveFormScreen> {
                               ),
                           ],
                           validator: (value) => value == null
-                              ? 'Bitte einen Bienenstand auswaehlen.'
+                              ? 'Bitte einen Bienenstand auswählen.'
                               : null,
                           onChanged: (value) {
                             setState(() => _selectedBeeStandId = value);
@@ -164,7 +164,7 @@ class _HiveFormScreenState extends State<HiveFormScreen> {
                           controller: _queenYearController,
                           keyboardType: TextInputType.number,
                           decoration: const InputDecoration(
-                            labelText: 'Koeniginnenjahr',
+                            labelText: 'Königinnenjahr',
                             border: OutlineInputBorder(),
                           ),
                           validator: _validateQueenYear,
@@ -173,13 +173,13 @@ class _HiveFormScreenState extends State<HiveFormScreen> {
                         DropdownButtonFormField<String>(
                           initialValue: _queenColor,
                           decoration: const InputDecoration(
-                            labelText: 'Koeniginnenfarbe',
+                            labelText: 'Königinnenfarbe',
                             border: OutlineInputBorder(),
                           ),
                           items: const [
                             DropdownMenuItem(
                               value: 'Weiss',
-                              child: Text('Weiss'),
+                              child: Text('Weiß'),
                             ),
                             DropdownMenuItem(
                               value: 'Gelb',
@@ -188,7 +188,7 @@ class _HiveFormScreenState extends State<HiveFormScreen> {
                             DropdownMenuItem(value: 'Rot', child: Text('Rot')),
                             DropdownMenuItem(
                               value: 'Gruen',
-                              child: Text('Gruen'),
+                              child: Text('Grün'),
                             ),
                             DropdownMenuItem(
                               value: 'Blau',
@@ -205,7 +205,7 @@ class _HiveFormScreenState extends State<HiveFormScreen> {
                         TextFormField(
                           controller: _queenOriginController,
                           decoration: const InputDecoration(
-                            labelText: 'Koeniginnenherkunft optional',
+                            labelText: 'Königinnenherkunft optional',
                             border: OutlineInputBorder(),
                           ),
                         ),
@@ -224,7 +224,7 @@ class _HiveFormScreenState extends State<HiveFormScreen> {
                               ),
                           ],
                           validator: (value) => value == null
-                              ? 'Bitte einen Status auswaehlen.'
+                              ? 'Bitte einen Status auswählen.'
                               : null,
                           onChanged: (value) {
                             if (value != null) {
@@ -252,7 +252,7 @@ class _HiveFormScreenState extends State<HiveFormScreen> {
                   onPressed: _saveHive,
                   icon: const Icon(Icons.save),
                   label: Text(
-                    _isEditing ? 'Aenderungen speichern' : 'Volk speichern',
+                    _isEditing ? 'Änderungen speichern' : 'Volk speichern',
                   ),
                 ),
               ],
